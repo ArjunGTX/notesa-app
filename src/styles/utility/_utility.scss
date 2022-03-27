@@ -46,12 +46,22 @@
   flex-wrap: wrap;
 }
 
+@each $color, $value in $background-colors {
+  .hover-#{$color}:hover {
+    background-color: darken($value, 5%);
+    transition: background-color 200ms;
+  }
+}
+
 @each $cursor in $cursors {
   .cursor-#{$cursor} {
     cursor: $cursor;
   }
 }
-
+.full-page {
+  width: 100vw;
+  height: 100vh;
+}
 .full-width {
   width: 100%;
 }

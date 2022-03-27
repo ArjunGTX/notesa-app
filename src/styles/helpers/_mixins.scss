@@ -11,11 +11,3 @@
     @content;
   }
 }
-
-@mixin button-hover($map: $background-colors, $color: "primary") {
-  @if (lightness($color) < 50) {
-    background-color: lighten(map-get($map, $color), 3%);
-  } @else {
-    background-color: darken(map-get($map, $color), 3%);
-  }
-}
