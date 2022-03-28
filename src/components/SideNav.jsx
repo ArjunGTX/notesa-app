@@ -1,10 +1,13 @@
-import React from "react";
+import React, { useRef } from "react";
 import { AiOutlineHome } from "react-icons/ai";
 import { FaRegUserCircle, FaRegTrashAlt } from "react-icons/fa";
 import { FiArchive } from "react-icons/fi";
 import { MdLabelOutline } from "react-icons/md";
+import { GrClose } from "react-icons/gr";
 import { Button } from "./Button";
 import { ListItem } from "./ListItem";
+import { useSideNav } from "../contexts";
+import { useClickOutside } from "../utils/hooks";
 
 const LINKS = [
   {
@@ -34,13 +37,29 @@ const LINKS = [
   },
 ];
 
-export const SideNav = () => {
+export const SideNav = ({ className }) => {
+  const { isSideNavActive, toggleSideNav } = useSideNav();
+
+  const sideNavRef = useRef(null);
+
+  const closeSideNav = () => toggleSideNav(false);
+
+  useClickOutside(sideNavRef, closeSideNav);
+
   return (
-    <div className="fc-fs-fs">
+    <div
+      ref={sideNavRef}
+      className={`fc-fs-fs p-xl side-nav ${
+        isSideNavActive ? "show-side-nav" : ""
+      } ${className ? className : ""}`}
+    >
+      <button onClick={closeSideNav} className="close m-xl ml-auto">
+        <GrClose className="txt-lg" />
+      </button>
       {LINKS.map((link) => (
         <ListItem key={link.item} link={link} />
       ))}
-      <Button variant="contained" color="primary" className="mt-xl">
+      <Button variant="contained" color="primary" className="mt-xl full-width">
         Create New Note
       </Button>
     </div>

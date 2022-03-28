@@ -1,0 +1,7 @@
+@media screen and (min-width: 720px) {
+  .header {
+    & .menu-btn {
+      display: none;
+    }
+  }
+}
