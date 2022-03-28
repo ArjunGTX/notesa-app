@@ -88,9 +88,9 @@ export const NoteCard = ({ note, className, newNote }) => {
           {!newNote && `Created on ${note?.createdAt}`}
         </p>
         <div className="fr-fs-ct">
-          <button onClick={toggleEdit} className="mx-md">
+          <button onClick={toggleEdit} className="mx-md font-medium txt-success">
             {editNote ? (
-              <AiFillEdit className="txt-medium txt-md" />
+              "Done"
             ) : (
               <AiOutlineEdit className="txt-medium txt-md" />
             )}
