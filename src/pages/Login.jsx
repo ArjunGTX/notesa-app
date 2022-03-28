@@ -1,8 +1,13 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button, Input, InputAlert } from "../components";
+import { useAuth } from "../contexts";
+import { login, validateLoginInputs } from "../utils/api";
 
 export const Login = () => {
+  const navigate = useNavigate();
+  const { setAuth } = useAuth();
+  const [loading, setLoading] = useState(false);
   const [loginInputs, setLoginInputs] = useState({
     email: "",
     password: "",
@@ -11,6 +16,38 @@ export const Login = () => {
     email: "",
     password: "",
   });
+
+  const loginRequest = async (email, password) => {
+    try {
+      setLoading(true);
+      const { status, data } = await login(email, password);
+      setLoading(false);
+      if (!status === 200) return;
+      setAuth({
+        userId: data.foundUser._id,
+        isLoggedIn: true,
+        encodedToken: data.encodedToken,
+      });
+      navigate(-1);
+    } catch (error) {
+      setLoading(false);
+      console.log(error);
+    }
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const { isValid, errors } = validateLoginInputs(loginInputs, loginErrors);
+    if (!isValid) {
+      setLoginErrors(errors);
+      return;
+    }
+    loginRequest(loginInputs.email, loginInputs.password);
+  };
+
+  const handleGuestLogin = () => {
+    loginRequest("guestuser@email.com", "GuestUser@123");
+  };
 
   const handleInputChange = (e) => {
     setLoginInputs((inputs) => ({
@@ -25,12 +62,17 @@ export const Login = () => {
 
   return (
     <div className="full-page fr-ct-ct p-xl">
-      <form className="auth-form shadow-medium fc-ct-ct p-xl br-sm">
+      <form
+        onSubmit={handleSubmit}
+        autoComplete="new-password"
+        className="auth-form shadow-medium fc-ct-ct p-xl br-sm"
+      >
         <h3 className="font-medium txt-xl">Login</h3>
         <div className="px-xl py-sm full-width fc-fs-fs">
           <Input
             type="text"
             id="email"
+            autoComplete={"new-password"}
             placeholder={"Enter Email Address"}
             value={loginInputs.email}
             onChange={handleInputChange}
@@ -42,6 +84,7 @@ export const Login = () => {
         <div className="px-xl py-sm full-width fc-fs-fs">
           <Input
             type="password"
+            autoComplete="new-password"
             id="password"
             placeholder={"Enter Password"}
             value={loginInputs.password}
@@ -60,6 +103,8 @@ export const Login = () => {
             Login
           </Button>
           <Button
+            type="button"
+            onClick={handleGuestLogin}
             variant={"outlined"}
             color="primary"
             className="full-width mb-sm"

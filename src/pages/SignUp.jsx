@@ -1,8 +1,14 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button, Input, InputAlert } from "../components";
+import { useAuth } from "../contexts";
+import { signUp, validateSignUpInputs } from "../utils/api";
 
 export const SignUp = () => {
+  const navigate = useNavigate();
+  const { setAuth } = useAuth();
+
+  const [loading, setLoading] = useState(false);
   const [signUpInputs, setSignUpInputs] = useState({
     firstName: "",
     lastName: "",
@@ -18,6 +24,38 @@ export const SignUp = () => {
     confirmPassword: "",
   });
 
+  const handleSubmit = async (e) => {
+    try {
+      e.preventDefault();
+      const { isValid, errors } = validateSignUpInputs(
+        signUpInputs,
+        signUpErrors
+      );
+      if (!isValid) {
+        setSignUpErrors(errors);
+        return;
+      }
+      setLoading(true);
+      const { status, data } = await signUp(
+        signUpInputs.firstName,
+        signUpInputs.lastName,
+        signUpInputs.email,
+        signUpInputs.password
+      );
+      setLoading(false);
+      if (status !== 201) return;
+      setAuth({
+        userId: data.createdUser._id,
+        isLoggedIn: true,
+        encodedToken: data.encodedToken,
+      });
+      navigate("/");
+    } catch (error) {
+      setLoading(false);
+      console.log(error);
+    }
+  };
+
   const handleInputChange = (e) => {
     setSignUpInputs((inputs) => ({
       ...inputs,
@@ -31,7 +69,10 @@ export const SignUp = () => {
 
   return (
     <div className="full-page fr-ct-ct p-xl">
-      <form className="auth-form shadow-medium fc-ct-ct p-xl br-sm">
+      <form
+        onSubmit={handleSubmit}
+        className="auth-form shadow-medium fc-ct-ct p-xl br-sm"
+      >
         <h3 className="font-medium txt-xl">SignUp</h3>
         <div className="px-xl py-sm full-width fc-fs-fs">
           <Input
@@ -73,6 +114,7 @@ export const SignUp = () => {
           <Input
             type="password"
             id="password"
+            autoComplete="new-password"
             placeholder={"Enter Password"}
             value={signUpInputs.password}
             onChange={handleInputChange}
@@ -85,6 +127,7 @@ export const SignUp = () => {
           <Input
             type="password"
             id="confirmPassword"
+            autoComplete="new-password"
             placeholder={"Confirm Password"}
             value={signUpInputs.confirmPassword}
             onChange={handleInputChange}
