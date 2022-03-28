@@ -106,16 +106,6 @@
   text-overflow: ellipsis;
 }
 
-.grid {
-  display: flex;
-  flex-wrap: wrap;
-}
-@for $i from 1 to 13 {
-  .grid-col-#{$i} {
-    flex: 0 0 calc($i / 12 * 100%);
-  }
-}
-
 .display-block {
   display: block;
 }
