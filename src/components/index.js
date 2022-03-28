@@ -5,3 +5,6 @@ export * from "./InputAlert";
 export * from "./SideNav";
 export * from "./Header";
 export * from "./MainContainer";
+export * from "./SearchBar";
+export * from "./NoteCard";
+export * from "./Label";
