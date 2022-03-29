@@ -163,7 +163,7 @@ export const NoteCard = ({ note, className, newNote }) => {
             </button>
           ) : (
             <button onClick={() => setEditNote(true)} className="mx-md">
-              <AiOutlineEdit className="txt-md" />
+              <AiOutlineEdit className="txt-md txt-medium" />
             </button>
           )}
           <button onClick={handleColorChange} className="mx-md">
