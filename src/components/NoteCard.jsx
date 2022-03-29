@@ -116,7 +116,7 @@ export const NoteCard = ({ note, className, newNote }) => {
         {noteData.isPinned ? (
           <BsPinAngleFill className="txt-md" />
         ) : (
-          <BsPinAngle className="txt-md" />
+          <BsPinAngle className="txt-md txt-medium" />
         )}
       </button>
       <form>
