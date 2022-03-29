@@ -123,7 +123,7 @@ export const NoteCard = ({ note, className, newNote }) => {
         <input
           type="text"
           id="title"
-          placeholder="Note Title"
+          placeholder="Flat Earther"
           value={noteData.title}
           disabled={!editNote}
           onChange={handleNoteChange}
@@ -162,9 +162,11 @@ export const NoteCard = ({ note, className, newNote }) => {
               Save
             </button>
           ) : (
-            <button onClick={() => setEditNote(true)} className="mx-md">
-              <AiOutlineEdit className="txt-md txt-medium" />
-            </button>
+            !newNote && (
+              <button onClick={() => setEditNote(true)} className="mx-md">
+                <AiOutlineEdit className="txt-md txt-medium" />
+              </button>
+            )
           )}
           <button onClick={handleColorChange} className="mx-md">
             <BsPalette className="txt-medium" />
