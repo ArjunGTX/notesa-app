@@ -1,0 +1,13 @@
+.search-bar {
+  width: clamp(50%, 90%, 20rem);
+  & button {
+    top: 50%;
+    transform: translateY(-40%);
+  }
+  & .search-btn {
+    right: 3rem;
+  }
+  & .filter-btn {
+    right: 1rem;
+  }
+}

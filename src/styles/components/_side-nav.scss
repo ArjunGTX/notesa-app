@@ -1,0 +1,34 @@
+.side-nav {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  transition: transform 250ms;
+  box-shadow: $shadow-light;
+  transform: translateX(-100%);
+  z-index: 200;
+  background-color: map-get($text-colors, "light");
+  & .list-item {
+    & * {
+      font-weight: map-get($font-weights, "regular");
+    }
+    & .active * {
+      font-weight: map-get($font-weights, "bold");
+    }
+  }
+  &.show-side-nav {
+    transform: translateX(0);
+  }
+}
+
+@media screen and (min-width: 720px) {
+  .side-nav {
+    box-shadow: none;
+    width: 20rem;
+    transform: translateX(0);
+    position: static;
+    & .close {
+      display: none;
+    }
+  }
+}

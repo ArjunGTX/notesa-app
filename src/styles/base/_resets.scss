@@ -26,12 +26,17 @@ button {
     cursor: not-allowed;
   }
 }
-ul {
+ul, li {
   list-style: none;
 }
 a {
   text-decoration: none;
   color: inherit;
+}
+textarea {
+  border: none;
+  background-color: inherit;
+  resize: none;
 }
 
 $base-size: 8;

@@ -4,7 +4,7 @@ import "./styles/index.scss";
 import App from "./App";
 import { makeServer } from "./server";
 import { BrowserRouter } from "react-router-dom";
-import { AuthProvider } from "./contexts";
+import { AuthProvider, SideNavProvider } from "./contexts";
 
 makeServer();
 
@@ -12,7 +12,9 @@ ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter>
       <AuthProvider>
-        <App />
+        <SideNavProvider>
+          <App />
+        </SideNavProvider>
       </AuthProvider>
     </BrowserRouter>
   </React.StrictMode>,
