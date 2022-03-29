@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { BsPinAngle, BsPinAngleFill, BsPalette } from "react-icons/bs";
 import { MdLabelOutline } from "react-icons/md";
 import { FaRegTrashAlt } from "react-icons/fa";
@@ -12,6 +12,8 @@ import { useAuth, useNotes } from "../contexts";
 export const NoteCard = ({ note, className, newNote }) => {
   const { auth } = useAuth();
   const { setNotes } = useNotes();
+
+  const colorCountRef = useRef(0);
 
   const [editNote, setEditNote] = useState(newNote);
   const [noteData, setNoteData] = useState(() =>
@@ -27,7 +29,7 @@ export const NoteCard = ({ note, className, newNote }) => {
       : {
           title: "",
           body: "",
-          color: NOTE_COLORS[Math.floor(Math.random() * 4)],
+          color: NOTE_COLORS[colorCountRef.current],
           isPinned: false,
           labels: [],
           createdAt: Date.now(),
@@ -80,9 +82,12 @@ export const NoteCard = ({ note, className, newNote }) => {
   };
 
   const handleColorChange = () => {
+    colorCountRef.current !== 3
+      ? (colorCountRef.current += 1)
+      : (colorCountRef.current = 0);
     setNoteData((noteData) => ({
       ...noteData,
-      color: NOTE_COLORS[Math.floor(Math.random() * 4)],
+      color: NOTE_COLORS[colorCountRef.current],
     }));
     setEditNote(true);
   };
@@ -95,7 +100,7 @@ export const NoteCard = ({ note, className, newNote }) => {
     setNoteData({
       title: "",
       body: "",
-      color: NOTE_COLORS[Math.floor(Math.random() * 4)],
+      color: NOTE_COLORS[0],
       isPinned: false,
       labels: [],
       createdAt: Date.now(),
@@ -103,7 +108,7 @@ export const NoteCard = ({ note, className, newNote }) => {
 
   return (
     <div
-      className={`br-sm px-xl py-lg note-card pos-rel bg-note-${
+      className={`br-sm px-xl py-lg full-width pos-rel bg-note-${
         noteData.color
       } ${className ? className : ""}`}
     >
