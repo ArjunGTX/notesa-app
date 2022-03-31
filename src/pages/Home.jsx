@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import {
+  Button,
   Header,
   MainContainer,
   NoteCard,
@@ -14,15 +15,43 @@ export const Home = () => {
   const pinnedNotes = notes.filter((note) => note.isPinned);
   const otherNotes = notes.filter((note) => !note.isPinned);
 
+  const [showCreateNote, setShowCreateNote] = useState(false);
+
   return (
     <div className="full-page">
       <Header />
       <SideNav />
       <MainContainer>
         <SearchBar />
-
+        {showCreateNote ? (
+          <Button
+            onClick={() => setShowCreateNote(false)}
+            variant="outlined"
+            color="primary"
+            className="mt-xl"
+          >
+            Cancel
+          </Button>
+        ) : (
+          <Button
+            onClick={() => setShowCreateNote(true)}
+            variant="contained"
+            color="primary"
+            className="mt-xl"
+          >
+            Create New Note
+          </Button>
+        )}
         <div className="note-container full-height ofy-auto fc-fs-ct p-xl mt-xl">
-          <NoteCard newNote className="mb-xl" />
+          {showCreateNote && (
+            <NoteCard
+              newNote
+              disableArchive
+              disableDelete
+              disablePin
+              className="mb-xl"
+            />
+          )}
           {notes.length !== 0 && (
             <>
               <h3 className="txt-lg font-medium mt-xl mr-auto">Pinned Notes</h3>

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { BsPinAngle, BsPinAngleFill, BsPalette } from "react-icons/bs";
 import { MdLabelOutline } from "react-icons/md";
 import { FaRegTrashAlt } from "react-icons/fa";
@@ -9,7 +9,15 @@ import { Label } from "./Label";
 import { addNote, updateNote, validateNote } from "../utils/api";
 import { useAuth, useNotes } from "../contexts";
 
-export const NoteCard = ({ note, className, newNote }) => {
+export const NoteCard = ({
+  note,
+  className,
+  newNote,
+  disablePin,
+  disableEdit,
+  disableArchive,
+  disableDelete,
+}) => {
   const { auth } = useAuth();
   const { setNotes } = useNotes();
 
@@ -35,6 +43,10 @@ export const NoteCard = ({ note, className, newNote }) => {
           createdAt: Date.now(),
         }
   );
+
+  useEffect(() => {
+    newNote || updateNoteRequest();
+  }, [noteData.isPinned, noteData.color]);
 
   const createNoteRequest = async () => {
     try {
@@ -78,7 +90,6 @@ export const NoteCard = ({ note, className, newNote }) => {
       ...noteData,
       isPinned: !noteData.isPinned,
     }));
-    setEditNote(true);
   };
 
   const handleColorChange = () => {
@@ -89,7 +100,6 @@ export const NoteCard = ({ note, className, newNote }) => {
       ...noteData,
       color: NOTE_COLORS[colorCountRef.current],
     }));
-    setEditNote(true);
   };
 
   const handleSave = () => {
@@ -113,11 +123,13 @@ export const NoteCard = ({ note, className, newNote }) => {
       } ${className ? className : ""}`}
     >
       <button onClick={handlePinChange} className="pos-abs top-right">
-        {noteData.isPinned ? (
-          <BsPinAngleFill className="txt-md" />
-        ) : (
-          <BsPinAngle className="txt-md txt-medium" />
-        )}
+        {!disablePin ? (
+          noteData.isPinned ? (
+            <BsPinAngleFill className="txt-md" />
+          ) : (
+            <BsPinAngle className="txt-md txt-medium" />
+          )
+        ) : null}
       </button>
       <form>
         <input
@@ -154,32 +166,38 @@ export const NoteCard = ({ note, className, newNote }) => {
             `Created on ${new Date(noteData.createdAt).toDateString()}`}
         </p>
         <div className="fr-fs-ct">
-          {editNote && validateNote(noteData) ? (
-            <button
-              onClick={handleSave}
-              className="mx-md font-medium txt-success"
-            >
-              Save
-            </button>
-          ) : (
-            !newNote && (
-              <button onClick={() => setEditNote(true)} className="mx-md">
-                <AiOutlineEdit className="txt-md txt-medium" />
+          {!disableEdit ? (
+            editNote && validateNote(noteData) ? (
+              <button
+                onClick={handleSave}
+                className="mx-md font-medium txt-success"
+              >
+                Save
               </button>
+            ) : (
+              !newNote && (
+                <button onClick={() => setEditNote(true)} className="mx-md">
+                  <AiOutlineEdit className="txt-md txt-medium" />
+                </button>
+              )
             )
-          )}
+          ) : null}
           <button onClick={handleColorChange} className="mx-md">
             <BsPalette className="txt-medium" />
           </button>
           <button className="mx-md">
             <MdLabelOutline className="txt-medium txt-md" />
           </button>
-          <button className="mx-md">
-            <FiArchive className="txt-medium" />
-          </button>
-          <button className="mx-md">
-            <FaRegTrashAlt className="txt-medium" />
-          </button>
+          {!disableArchive && (
+            <button className="mx-md">
+              <FiArchive className="txt-medium" />
+            </button>
+          )}
+          {!disableDelete && (
+            <button className="mx-md">
+              <FaRegTrashAlt className="txt-medium" />
+            </button>
+          )}
         </div>
       </div>
     </div>

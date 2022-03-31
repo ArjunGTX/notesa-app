@@ -1,16 +1,41 @@
-import { Route, Routes, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
+import { ProtectedRoute } from "./components";
 import { useAuth } from "./contexts";
-import { Home, LandingPage, Login, PageNotFound, SignUp } from "./pages";
+import {
+  Archive,
+  Home,
+  LandingPage,
+  Login,
+  PageNotFound,
+  SignUp,
+} from "./pages";
 
 function App() {
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
   const {
     auth: { isLoggedIn },
   } = useAuth();
+
+  useEffect(() => {
+    if (!isLoggedIn) return;
+    if (pathname === "/login" || pathname === "/sign-up") navigate(-1);
+  }, [pathname, isLoggedIn]);
+
   return (
     <Routes>
       <Route path="/" element={isLoggedIn ? <Home /> : <LandingPage />} />
       <Route path="/login" element={<Login />} />
       <Route path="/sign-up" element={<SignUp />} />
+      <Route
+        path="/archive"
+        element={
+          <ProtectedRoute>
+            <Archive />
+          </ProtectedRoute>
+        }
+      />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );

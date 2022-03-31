@@ -59,9 +59,6 @@ export const SideNav = ({ className }) => {
       {LINKS.map((link) => (
         <ListItem key={link.item} link={link} />
       ))}
-      <Button variant="contained" color="primary" className="mt-xl full-width">
-        Create New Note
-      </Button>
     </div>
   );
 };
