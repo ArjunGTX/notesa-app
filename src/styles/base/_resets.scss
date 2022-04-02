@@ -26,8 +26,19 @@ button {
     cursor: not-allowed;
   }
 }
-ul, li {
-  list-style: none;
+h1 {
+  font-size: map-get($font-sizes, "xl");
+}
+h2 {
+  font-size: map-get($font-sizes, "lg");
+}
+h3 {
+  font-size: map-get($font-sizes, "md");
+}
+ul,
+ol {
+  padding-left: map-get($paddings, "md");
+  margin-left: map-get($margins, "md");
 }
 a {
   text-decoration: none;

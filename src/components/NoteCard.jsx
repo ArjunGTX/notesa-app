@@ -8,6 +8,8 @@ import { NOTE_COLORS } from "../utils/constants";
 import { Label } from "./Label";
 import { addNote, updateNote, validateNote } from "../utils/api";
 import { useAuth, useNotes } from "../contexts";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
 export const NoteCard = ({
   note,
@@ -22,6 +24,7 @@ export const NoteCard = ({
   const { setNotes } = useNotes();
 
   const colorCountRef = useRef(0);
+  const noteBodyRef = useRef(null);
 
   const [editNote, setEditNote] = useState(newNote);
   const [noteData, setNoteData] = useState(() =>
@@ -43,6 +46,11 @@ export const NoteCard = ({
           createdAt: Date.now(),
         }
   );
+
+  useEffect(() => {
+    if (editNote || !noteBodyRef.current) return;
+    noteBodyRef.current.innerHTML = noteData.body;
+  }, [editNote, noteBodyRef.current]);
 
   useEffect(() => {
     newNote || updateNoteRequest();
@@ -122,7 +130,10 @@ export const NoteCard = ({
         noteData.color
       } ${className ? className : ""}`}
     >
-      <button onClick={handlePinChange} className="pos-abs top-right">
+      <button
+        onClick={handlePinChange}
+        className="pos-abs top-right p-sm br-sm fr-ct-ct hover-light"
+      >
         {!disablePin ? (
           noteData.isPinned ? (
             <BsPinAngleFill className="txt-md" />
@@ -135,25 +146,32 @@ export const NoteCard = ({
         <input
           type="text"
           id="title"
-          placeholder="Flat Earther"
+          placeholder="Note Title"
           value={noteData.title}
           disabled={!editNote}
           onChange={handleNoteChange}
-          className="txt-md font-medium mr-xl pr-xl full-width"
+          className="txt-md font-medium mr-xl mb-md pr-xl full-width"
         />
-        <textarea
-          value={noteData.body}
-          disabled={!editNote}
-          id="body"
-          placeholder="Earth is flat! people don't believe me."
-          onChange={handleNoteChange}
-          className="my-xs mr-xl full-width"
-          rows={4}
-        >
-          {noteData.body}
-        </textarea>
+
+        {editNote ? (
+          <ReactQuill
+            value={noteData.body}
+            modules={NoteCard.modules}
+            formats={NoteCard.formats}
+            bounds={".app"}
+            placeholder="Write something..."
+            onChange={(value) =>
+              setNoteData((noteData) => ({
+                ...noteData,
+                body: value,
+              }))
+            }
+          />
+        ) : (
+          <div ref={noteBodyRef} className="full-width"></div>
+        )}
       </form>
-      <div className="fr-fs-ct mb-lg">
+      <div className="fr-fs-ct my-md">
         {noteData?.labels.map((label, index) => (
           <Label key={index} className="mx-sm">
             {label}
@@ -176,25 +194,31 @@ export const NoteCard = ({
               </button>
             ) : (
               !newNote && (
-                <button onClick={() => setEditNote(true)} className="mx-md">
+                <button
+                  onClick={() => setEditNote(true)}
+                  className="mx-sm p-sm br-sm fr-ct-ct hover-light"
+                >
                   <AiOutlineEdit className="txt-md txt-medium" />
                 </button>
               )
             )
           ) : null}
-          <button onClick={handleColorChange} className="mx-md">
+          <button
+            onClick={handleColorChange}
+            className="mx-sm p-sm br-sm fr-ct-ct hover-light"
+          >
             <BsPalette className="txt-medium" />
           </button>
-          <button className="mx-md">
+          <button className="mx-sm p-sm br-sm fr-ct-ct hover-light">
             <MdLabelOutline className="txt-medium txt-md" />
           </button>
           {!disableArchive && (
-            <button className="mx-md">
+            <button className="mx-sm p-sm br-sm fr-ct-ct hover-light">
               <FiArchive className="txt-medium" />
             </button>
           )}
           {!disableDelete && (
-            <button className="mx-md">
+            <button className="mx-sm p-sm br-sm fr-ct-ct hover-light">
               <FaRegTrashAlt className="txt-medium" />
             </button>
           )}
@@ -203,3 +227,35 @@ export const NoteCard = ({
     </div>
   );
 };
+
+NoteCard.modules = {
+  toolbar: [
+    [
+      { header: "1" },
+      { header: "2" },
+      {
+        font: ["sans-serif", "serif", "monospace"],
+      },
+    ],
+    ["bold", "italic", "underline", "strike"],
+    [
+      { list: "ordered" },
+      { list: "bullet" },
+      { indent: "-1" },
+      { indent: "+1" },
+    ],
+    ["link"],
+  ],
+};
+NoteCard.formats = [
+  "header",
+  "font",
+  "bold",
+  "italic",
+  "underline",
+  "strike",
+  "list",
+  "bullet",
+  "indent",
+  "link",
+];

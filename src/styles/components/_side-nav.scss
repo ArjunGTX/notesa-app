@@ -19,6 +19,9 @@
   &.show-side-nav {
     transform: translateX(0);
   }
+  & ul, & li {
+    list-style: none;
+  }
 }
 
 @media screen and (min-width: 720px) {
