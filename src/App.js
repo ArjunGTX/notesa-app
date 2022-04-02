@@ -1,9 +1,7 @@
 import { useEffect } from "react";
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
-import { ProtectedRoute } from "./components";
 import { useAuth } from "./contexts";
 import {
-  Archive,
   Home,
   LandingPage,
   Login,
@@ -28,14 +26,6 @@ function App() {
       <Route path="/" element={isLoggedIn ? <Home /> : <LandingPage />} />
       <Route path="/login" element={<Login />} />
       <Route path="/sign-up" element={<SignUp />} />
-      <Route
-        path="/archive"
-        element={
-          <ProtectedRoute>
-            <Archive />
-          </ProtectedRoute>
-        }
-      />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );

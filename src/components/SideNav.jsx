@@ -4,7 +4,6 @@ import { FaRegUserCircle, FaRegTrashAlt } from "react-icons/fa";
 import { FiArchive } from "react-icons/fi";
 import { MdLabelOutline } from "react-icons/md";
 import { GrClose } from "react-icons/gr";
-import { Button } from "./Button";
 import { ListItem } from "./ListItem";
 import { useSideNav } from "../contexts";
 import { useClickOutside } from "../utils/hooks";
