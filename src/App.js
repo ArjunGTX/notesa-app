@@ -9,6 +9,7 @@ import {
   Login,
   PageNotFound,
   SignUp,
+  Trash,
 } from "./pages";
 
 function App() {
@@ -45,6 +46,16 @@ function App() {
           <ProtectedRoute>
             <PageContainer>
               <Archive />
+            </PageContainer>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/trash"
+        element={
+          <ProtectedRoute>
+            <PageContainer>
+              <Trash />
             </PageContainer>
           </ProtectedRoute>
         }
