@@ -9,3 +9,4 @@ export * from "./SearchBar";
 export * from "./NoteCard";
 export * from "./Label";
 export * from "./ProtectedRoute";
+export * from "./PageContainer";

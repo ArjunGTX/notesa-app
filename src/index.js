@@ -4,7 +4,12 @@ import "./styles/index.scss";
 import App from "./App";
 import { makeServer } from "./server";
 import { BrowserRouter } from "react-router-dom";
-import { AuthProvider, NotesProvider, SideNavProvider } from "./contexts";
+import {
+  ArchivesProvider,
+  AuthProvider,
+  NotesProvider,
+  SideNavProvider,
+} from "./contexts";
 
 makeServer();
 
@@ -14,7 +19,9 @@ ReactDOM.render(
       <AuthProvider>
         <SideNavProvider>
           <NotesProvider>
-            <App />
+            <ArchivesProvider>
+              <App />
+            </ArchivesProvider>
           </NotesProvider>
         </SideNavProvider>
       </AuthProvider>
