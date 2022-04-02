@@ -7,7 +7,7 @@ export const ListItem = ({ link: { icon, item, route } }) => {
       <NavLink
         to={route}
         className={({ isActive }) =>
-          isActive ? "fr-fs-ct active" : "fr-fs-ct"
+          isActive ? "fr-fs-ct active full-width" : "fr-fs-ct full-width"
         }
       >
         {icon}

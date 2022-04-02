@@ -6,8 +6,15 @@ import { FiArchive } from "react-icons/fi";
 import { AiOutlineEdit } from "react-icons/ai";
 import { NOTE_COLORS } from "../utils/constants";
 import { Label } from "./Label";
-import { addNote, updateNote, validateNote } from "../utils/api";
-import { useAuth, useNotes } from "../contexts";
+import {
+  addNote,
+  addToArchives,
+  deleteFromArchives,
+  restoreFromArchives,
+  updateNote,
+  validateNote,
+} from "../utils/api";
+import { useArchives, useAuth, useNotes } from "../contexts";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 
@@ -15,13 +22,17 @@ export const NoteCard = ({
   note,
   className,
   newNote,
+  archivedNote,
   disablePin,
   disableEdit,
   disableArchive,
+  disableLabel,
+  disableColor,
   disableDelete,
 }) => {
   const { auth } = useAuth();
   const { setNotes } = useNotes();
+  const { setArchives } = useArchives();
 
   const colorCountRef = useRef(0);
   const noteBodyRef = useRef(null);
@@ -34,7 +45,7 @@ export const NoteCard = ({
           color: note.color,
           createdAt: note.createdAt,
           isPinned: note.isPinned,
-          labels: note.labels,
+          tags: note.tags,
           title: note.title,
         }
       : {
@@ -42,7 +53,7 @@ export const NoteCard = ({
           body: "",
           color: NOTE_COLORS[colorCountRef.current],
           isPinned: false,
-          labels: [],
+          tags: [],
           createdAt: Date.now(),
         }
   );
@@ -79,8 +90,55 @@ export const NoteCard = ({
       );
       if (status === 201) {
         setNotes(data.notes);
-        console.log(data);
         setEditNote(false);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const archiveNoteRequest = async () => {
+    try {
+      if (!auth.isLoggedIn) return;
+      const { status, data } = await addToArchives(
+        auth.encodedToken,
+        noteData,
+        note._id
+      );
+      if (status === 201) {
+        setArchives(data.archives);
+        setNotes(data.notes);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const restoreNoteRequest = async () => {
+    try {
+      if (!auth.isLoggedIn) return;
+      const { status, data } = await restoreFromArchives(
+        auth.encodedToken,
+        note._id
+      );
+      if (status === 200) {
+        setArchives(data.archives);
+        setNotes(data.notes);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const deleteNoteFromArchivesRequest = async () => {
+    try {
+      if (!auth.isLoggedIn) return;
+      const { status, data } = await deleteFromArchives(
+        auth.encodedToken,
+        note._id
+      );
+      if (status === 200) {
+        setArchives(data.archives);
       }
     } catch (error) {
       console.log(error);
@@ -114,13 +172,19 @@ export const NoteCard = ({
     newNote ? createNoteRequest() : updateNoteRequest();
   };
 
+  const handleArchive = () =>
+    archivedNote ? restoreNoteRequest() : archiveNoteRequest();
+
+  const handleDelete = () =>
+    archivedNote ? deleteNoteFromArchivesRequest() : null;
+
   const clearInputs = () =>
     setNoteData({
       title: "",
       body: "",
       color: NOTE_COLORS[0],
       isPinned: false,
-      labels: [],
+      tags: [],
       createdAt: Date.now(),
     });
 
@@ -172,7 +236,7 @@ export const NoteCard = ({
         )}
       </form>
       <div className="fr-fs-ct my-md">
-        {noteData?.labels.map((label, index) => (
+        {noteData.tags.map((label, index) => (
           <Label key={index} className="mx-sm">
             {label}
           </Label>
@@ -203,22 +267,32 @@ export const NoteCard = ({
               )
             )
           ) : null}
-          <button
-            onClick={handleColorChange}
-            className="mx-sm p-sm br-sm fr-ct-ct hover-light"
-          >
-            <BsPalette className="txt-medium" />
-          </button>
-          <button className="mx-sm p-sm br-sm fr-ct-ct hover-light">
-            <MdLabelOutline className="txt-medium txt-md" />
-          </button>
-          {!disableArchive && (
+          {!disableColor && (
+            <button
+              onClick={handleColorChange}
+              className="mx-sm p-sm br-sm fr-ct-ct hover-light"
+            >
+              <BsPalette className="txt-medium" />
+            </button>
+          )}
+          {!disableLabel && (
             <button className="mx-sm p-sm br-sm fr-ct-ct hover-light">
-              <FiArchive className="txt-medium" />
+              <MdLabelOutline className="txt-medium txt-md" />
+            </button>
+          )}
+          {!disableArchive && (
+            <button
+              onClick={handleArchive}
+              className="mx-sm p-sm br-sm fr-ct-ct hover-light"
+            >
+              <FiArchive className={archivedNote ? "txt-dark" : "txt-medium"} />
             </button>
           )}
           {!disableDelete && (
-            <button className="mx-sm p-sm br-sm fr-ct-ct hover-light">
+            <button
+              onClick={handleDelete}
+              className="mx-sm p-sm br-sm fr-ct-ct hover-light"
+            >
               <FaRegTrashAlt className="txt-medium" />
             </button>
           )}
