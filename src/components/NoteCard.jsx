@@ -3,6 +3,11 @@ import { BsPinAngle, BsPinAngleFill, BsPalette } from "react-icons/bs";
 import { MdLabelOutline, MdOutlineUnarchive } from "react-icons/md";
 import { FaRegTrashAlt, FaTrashRestore } from "react-icons/fa";
 import { FiArchive } from "react-icons/fi";
+import {
+  FcHighPriority,
+  FcLowPriority,
+  FcMediumPriority,
+} from "react-icons/fc";
 import { AiOutlineEdit } from "react-icons/ai";
 import { NOTE_COLORS } from "../utils/constants";
 import { Label } from "./Label";
@@ -50,6 +55,7 @@ export const NoteCard = ({
           isPinned: note.isPinned,
           tags: note.tags,
           title: note.title,
+          priority: note.priority,
         }
       : {
           title: "",
@@ -58,6 +64,7 @@ export const NoteCard = ({
           isPinned: false,
           tags: [],
           createdAt: Date.now(),
+          priority: "medium",
         }
   );
 
@@ -68,7 +75,7 @@ export const NoteCard = ({
 
   useEffect(() => {
     newNote || updateNoteRequest();
-  }, [noteData.isPinned, noteData.color]);
+  }, [noteData.isPinned, noteData.color, noteData.priority]);
 
   const createNoteRequest = async () => {
     try {
@@ -184,7 +191,7 @@ export const NoteCard = ({
   };
 
   const handleColorChange = () => {
-    colorCountRef.current !== 3
+    colorCountRef.current !== 5
       ? (colorCountRef.current += 1)
       : (colorCountRef.current = 0);
     setNoteData((noteData) => ({
@@ -192,6 +199,19 @@ export const NoteCard = ({
       color: NOTE_COLORS[colorCountRef.current],
     }));
   };
+
+  const handlePriorityChange = () =>
+    !archivedNote &&
+    !deletedNote &&
+    setNoteData((noteData) => ({
+      ...noteData,
+      priority:
+        noteData.priority === "low"
+          ? "medium"
+          : noteData.priority === "medium"
+          ? "high"
+          : "low",
+    }));
 
   const handleSave = () => {
     newNote ? createNoteRequest() : updateNoteRequest();
@@ -215,6 +235,7 @@ export const NoteCard = ({
       isPinned: false,
       tags: [],
       createdAt: Date.now(),
+      priority: "medium",
     });
 
   return (
@@ -235,17 +256,29 @@ export const NoteCard = ({
           )
         ) : null}
       </button>
+      <button
+        onClick={handlePriorityChange}
+        className="pos-abs top-left mt-xs ml-xs"
+      >
+        {noteData.priority === "low" ? (
+          <FcLowPriority className="txt-lg" />
+        ) : noteData.priority === "medium" ? (
+          <FcMediumPriority className="txt-lg" />
+        ) : (
+          <FcHighPriority className="txt-lg" />
+        )}
+      </button>
       <form>
-        <input
+        <textarea
           type="text"
           id="title"
           placeholder="Note Title"
           value={noteData.title}
           disabled={!editNote}
+          rows={1}
           onChange={handleNoteChange}
-          className="txt-md font-medium mr-xl mb-md pr-xl full-width"
+          className="txt-md font-medium mx-lg mb-md px-xl full-width"
         />
-
         {editNote ? (
           <ReactQuill
             value={noteData.body}

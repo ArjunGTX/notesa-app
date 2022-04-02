@@ -13,6 +13,8 @@ $background-colors: (
   "note-yellow": $note-yellow,
   "note-blue": $note-blue,
   "note-green": $note-green,
+  "note-pink": $note-pink,
+  "note-red": $note-red,
 );
 $text-colors: (
   "primary": $primary-main,
@@ -28,7 +30,7 @@ $text-colors: (
 
 $font-sizes: (
   "xs": $base-font-size * 0.75,
-  "sm": $base-font-size ,
+  "sm": $base-font-size,
   "md": $base-font-size * 1.25,
   "lg": $base-font-size * 1.5,
   "xl": $base-font-size * 1.75,
