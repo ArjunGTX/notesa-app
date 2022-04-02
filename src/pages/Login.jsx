@@ -28,7 +28,7 @@ export const Login = () => {
         isLoggedIn: true,
         encodedToken: data.encodedToken,
       });
-      navigate(-1);
+      navigate("/");
     } catch (error) {
       setLoading(false);
       console.log(error);

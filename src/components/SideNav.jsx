@@ -4,7 +4,6 @@ import { FaRegUserCircle, FaRegTrashAlt } from "react-icons/fa";
 import { FiArchive } from "react-icons/fi";
 import { MdLabelOutline } from "react-icons/md";
 import { GrClose } from "react-icons/gr";
-import { Button } from "./Button";
 import { ListItem } from "./ListItem";
 import { useSideNav } from "../contexts";
 import { useClickOutside } from "../utils/hooks";
@@ -59,9 +58,6 @@ export const SideNav = ({ className }) => {
       {LINKS.map((link) => (
         <ListItem key={link.item} link={link} />
       ))}
-      <Button variant="contained" color="primary" className="mt-xl full-width">
-        Create New Note
-      </Button>
     </div>
   );
 };

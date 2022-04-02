@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { BsPinAngle, BsPinAngleFill, BsPalette } from "react-icons/bs";
 import { MdLabelOutline } from "react-icons/md";
 import { FaRegTrashAlt } from "react-icons/fa";
@@ -8,12 +8,23 @@ import { NOTE_COLORS } from "../utils/constants";
 import { Label } from "./Label";
 import { addNote, updateNote, validateNote } from "../utils/api";
 import { useAuth, useNotes } from "../contexts";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
-export const NoteCard = ({ note, className, newNote }) => {
+export const NoteCard = ({
+  note,
+  className,
+  newNote,
+  disablePin,
+  disableEdit,
+  disableArchive,
+  disableDelete,
+}) => {
   const { auth } = useAuth();
   const { setNotes } = useNotes();
 
   const colorCountRef = useRef(0);
+  const noteBodyRef = useRef(null);
 
   const [editNote, setEditNote] = useState(newNote);
   const [noteData, setNoteData] = useState(() =>
@@ -35,6 +46,15 @@ export const NoteCard = ({ note, className, newNote }) => {
           createdAt: Date.now(),
         }
   );
+
+  useEffect(() => {
+    if (editNote || !noteBodyRef.current) return;
+    noteBodyRef.current.innerHTML = noteData.body;
+  }, [editNote, noteBodyRef.current]);
+
+  useEffect(() => {
+    newNote || updateNoteRequest();
+  }, [noteData.isPinned, noteData.color]);
 
   const createNoteRequest = async () => {
     try {
@@ -78,7 +98,6 @@ export const NoteCard = ({ note, className, newNote }) => {
       ...noteData,
       isPinned: !noteData.isPinned,
     }));
-    setEditNote(true);
   };
 
   const handleColorChange = () => {
@@ -89,7 +108,6 @@ export const NoteCard = ({ note, className, newNote }) => {
       ...noteData,
       color: NOTE_COLORS[colorCountRef.current],
     }));
-    setEditNote(true);
   };
 
   const handleSave = () => {
@@ -112,36 +130,48 @@ export const NoteCard = ({ note, className, newNote }) => {
         noteData.color
       } ${className ? className : ""}`}
     >
-      <button onClick={handlePinChange} className="pos-abs top-right">
-        {noteData.isPinned ? (
-          <BsPinAngleFill className="txt-md" />
-        ) : (
-          <BsPinAngle className="txt-md txt-medium" />
-        )}
+      <button
+        onClick={handlePinChange}
+        className="pos-abs top-right p-sm br-sm fr-ct-ct hover-light"
+      >
+        {!disablePin ? (
+          noteData.isPinned ? (
+            <BsPinAngleFill className="txt-md" />
+          ) : (
+            <BsPinAngle className="txt-md txt-medium" />
+          )
+        ) : null}
       </button>
       <form>
         <input
           type="text"
           id="title"
-          placeholder="Flat Earther"
+          placeholder="Note Title"
           value={noteData.title}
           disabled={!editNote}
           onChange={handleNoteChange}
-          className="txt-md font-medium mr-xl pr-xl full-width"
+          className="txt-md font-medium mr-xl mb-md pr-xl full-width"
         />
-        <textarea
-          value={noteData.body}
-          disabled={!editNote}
-          id="body"
-          placeholder="Earth is flat! people don't believe me."
-          onChange={handleNoteChange}
-          className="my-xs mr-xl full-width"
-          rows={4}
-        >
-          {noteData.body}
-        </textarea>
+
+        {editNote ? (
+          <ReactQuill
+            value={noteData.body}
+            modules={NoteCard.modules}
+            formats={NoteCard.formats}
+            bounds={".app"}
+            placeholder="Write something..."
+            onChange={(value) =>
+              setNoteData((noteData) => ({
+                ...noteData,
+                body: value,
+              }))
+            }
+          />
+        ) : (
+          <div ref={noteBodyRef} className="full-width"></div>
+        )}
       </form>
-      <div className="fr-fs-ct mb-lg">
+      <div className="fr-fs-ct my-md">
         {noteData?.labels.map((label, index) => (
           <Label key={index} className="mx-sm">
             {label}
@@ -154,34 +184,78 @@ export const NoteCard = ({ note, className, newNote }) => {
             `Created on ${new Date(noteData.createdAt).toDateString()}`}
         </p>
         <div className="fr-fs-ct">
-          {editNote && validateNote(noteData) ? (
-            <button
-              onClick={handleSave}
-              className="mx-md font-medium txt-success"
-            >
-              Save
-            </button>
-          ) : (
-            !newNote && (
-              <button onClick={() => setEditNote(true)} className="mx-md">
-                <AiOutlineEdit className="txt-md txt-medium" />
+          {!disableEdit ? (
+            editNote && validateNote(noteData) ? (
+              <button
+                onClick={handleSave}
+                className="mx-md font-medium txt-success"
+              >
+                Save
               </button>
+            ) : (
+              !newNote && (
+                <button
+                  onClick={() => setEditNote(true)}
+                  className="mx-sm p-sm br-sm fr-ct-ct hover-light"
+                >
+                  <AiOutlineEdit className="txt-md txt-medium" />
+                </button>
+              )
             )
-          )}
-          <button onClick={handleColorChange} className="mx-md">
+          ) : null}
+          <button
+            onClick={handleColorChange}
+            className="mx-sm p-sm br-sm fr-ct-ct hover-light"
+          >
             <BsPalette className="txt-medium" />
           </button>
-          <button className="mx-md">
+          <button className="mx-sm p-sm br-sm fr-ct-ct hover-light">
             <MdLabelOutline className="txt-medium txt-md" />
           </button>
-          <button className="mx-md">
-            <FiArchive className="txt-medium" />
-          </button>
-          <button className="mx-md">
-            <FaRegTrashAlt className="txt-medium" />
-          </button>
+          {!disableArchive && (
+            <button className="mx-sm p-sm br-sm fr-ct-ct hover-light">
+              <FiArchive className="txt-medium" />
+            </button>
+          )}
+          {!disableDelete && (
+            <button className="mx-sm p-sm br-sm fr-ct-ct hover-light">
+              <FaRegTrashAlt className="txt-medium" />
+            </button>
+          )}
         </div>
       </div>
     </div>
   );
 };
+
+NoteCard.modules = {
+  toolbar: [
+    [
+      { header: "1" },
+      { header: "2" },
+      {
+        font: ["sans-serif", "serif", "monospace"],
+      },
+    ],
+    ["bold", "italic", "underline", "strike"],
+    [
+      { list: "ordered" },
+      { list: "bullet" },
+      { indent: "-1" },
+      { indent: "+1" },
+    ],
+    ["link"],
+  ],
+};
+NoteCard.formats = [
+  "header",
+  "font",
+  "bold",
+  "italic",
+  "underline",
+  "strike",
+  "list",
+  "bullet",
+  "indent",
+  "link",
+];
