@@ -9,6 +9,7 @@ import {
   AuthProvider,
   NotesProvider,
   SideNavProvider,
+  TrashProvider,
 } from "./contexts";
 
 makeServer();
@@ -20,7 +21,9 @@ ReactDOM.render(
         <SideNavProvider>
           <NotesProvider>
             <ArchivesProvider>
-              <App />
+              <TrashProvider>
+                <App />
+              </TrashProvider>
             </ArchivesProvider>
           </NotesProvider>
         </SideNavProvider>

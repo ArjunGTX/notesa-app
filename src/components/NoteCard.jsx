@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { BsPinAngle, BsPinAngleFill, BsPalette } from "react-icons/bs";
-import { MdLabelOutline } from "react-icons/md";
-import { FaRegTrashAlt } from "react-icons/fa";
+import { MdLabelOutline, MdOutlineUnarchive } from "react-icons/md";
+import { FaRegTrashAlt, FaTrashRestore } from "react-icons/fa";
 import { FiArchive } from "react-icons/fi";
 import { AiOutlineEdit } from "react-icons/ai";
 import { NOTE_COLORS } from "../utils/constants";
@@ -10,11 +10,12 @@ import {
   addNote,
   addToArchives,
   deleteFromArchives,
+  deleteNote,
   restoreFromArchives,
   updateNote,
   validateNote,
 } from "../utils/api";
-import { useArchives, useAuth, useNotes } from "../contexts";
+import { useArchives, useAuth, useNotes, useTrash } from "../contexts";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 
@@ -23,6 +24,7 @@ export const NoteCard = ({
   className,
   newNote,
   archivedNote,
+  deletedNote,
   disablePin,
   disableEdit,
   disableArchive,
@@ -33,6 +35,7 @@ export const NoteCard = ({
   const { auth } = useAuth();
   const { setNotes } = useNotes();
   const { setArchives } = useArchives();
+  const { setTrash } = useTrash();
 
   const colorCountRef = useRef(0);
   const noteBodyRef = useRef(null);
@@ -97,6 +100,19 @@ export const NoteCard = ({
     }
   };
 
+  const deleteNoteRequest = async () => {
+    try {
+      if (!auth.isLoggedIn) return;
+      const { status, data } = await deleteNote(auth.encodedToken, note._id);
+      if (status === 200) {
+        setNotes(data.notes);
+        setTrash((trash) => [...trash, note]);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const archiveNoteRequest = async () => {
     try {
       if (!auth.isLoggedIn) return;
@@ -139,10 +155,19 @@ export const NoteCard = ({
       );
       if (status === 200) {
         setArchives(data.archives);
+        setTrash((trash) => [...trash, note]);
       }
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const deleteFromTrash = () =>
+    setTrash((trash) => trash.filter((item) => item._id !== note._id));
+
+  const restoreFromTrash = () => {
+    createNoteRequest();
+    deleteFromTrash();
   };
 
   const handleNoteChange = (e) =>
@@ -176,7 +201,11 @@ export const NoteCard = ({
     archivedNote ? restoreNoteRequest() : archiveNoteRequest();
 
   const handleDelete = () =>
-    archivedNote ? deleteNoteFromArchivesRequest() : null;
+    archivedNote
+      ? deleteNoteFromArchivesRequest()
+      : deletedNote
+      ? deleteFromTrash()
+      : deleteNoteRequest();
 
   const clearInputs = () =>
     setNoteData({
@@ -252,7 +281,7 @@ export const NoteCard = ({
             editNote && validateNote(noteData) ? (
               <button
                 onClick={handleSave}
-                className="mx-md font-medium txt-success"
+                className="mx-xs font-medium txt-success"
               >
                 Save
               </button>
@@ -260,7 +289,7 @@ export const NoteCard = ({
               !newNote && (
                 <button
                   onClick={() => setEditNote(true)}
-                  className="mx-sm p-sm br-sm fr-ct-ct hover-light"
+                  className="mx-xs p-sm br-sm fr-ct-ct hover-light"
                 >
                   <AiOutlineEdit className="txt-md txt-medium" />
                 </button>
@@ -276,22 +305,34 @@ export const NoteCard = ({
             </button>
           )}
           {!disableLabel && (
-            <button className="mx-sm p-sm br-sm fr-ct-ct hover-light">
+            <button className="mx-xs p-sm br-sm fr-ct-ct hover-light">
               <MdLabelOutline className="txt-medium txt-md" />
             </button>
           )}
           {!disableArchive && (
             <button
               onClick={handleArchive}
-              className="mx-sm p-sm br-sm fr-ct-ct hover-light"
+              className="mx-xs p-sm br-sm fr-ct-ct hover-light"
             >
-              <FiArchive className={archivedNote ? "txt-dark" : "txt-medium"} />
+              {archivedNote ? (
+                <MdOutlineUnarchive className="txt-medium txt-md" />
+              ) : (
+                <FiArchive className="txt-medium" />
+              )}
+            </button>
+          )}
+          {deletedNote && (
+            <button
+              onClick={restoreFromTrash}
+              className="mx-xs p-sm br-sm fr-ct-ct hover-light"
+            >
+              <FaTrashRestore className="txt-medium" />
             </button>
           )}
           {!disableDelete && (
             <button
               onClick={handleDelete}
-              className="mx-sm p-sm br-sm fr-ct-ct hover-light"
+              className="mx-xs p-sm br-sm fr-ct-ct hover-light"
             >
               <FaRegTrashAlt className="txt-medium" />
             </button>
