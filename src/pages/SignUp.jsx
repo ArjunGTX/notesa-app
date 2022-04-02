@@ -149,7 +149,6 @@ export const SignUp = () => {
           </Button>
           <Link
             to="/login"
-            state={pathname}
             className="txt-underline hover-light py-sm px-lg br-sm"
           >
             Already have an Account

@@ -1,12 +1,11 @@
 import React, { useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button, Input, InputAlert } from "../components";
 import { useAuth } from "../contexts";
 import { login, validateLoginInputs } from "../utils/api";
 
 export const Login = () => {
   const navigate = useNavigate();
-  const { state } = useLocation();
   const { setAuth } = useAuth();
   const [loading, setLoading] = useState(false);
   const [loginInputs, setLoginInputs] = useState({
@@ -29,8 +28,7 @@ export const Login = () => {
         isLoggedIn: true,
         encodedToken: data.encodedToken,
       });
-      console.log(state);
-      state === "/sign-up" ? navigate("/") : navigate(-1);
+      navigate("/");
     } catch (error) {
       setLoading(false);
       console.log(error);
