@@ -10,3 +10,4 @@ export * from "./NoteCard";
 export * from "./Label";
 export * from "./ProtectedRoute";
 export * from "./PageContainer";
+export * from "./Dropdown";

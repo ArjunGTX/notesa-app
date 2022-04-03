@@ -9,7 +9,7 @@ import {
   FcMediumPriority,
 } from "react-icons/fc";
 import { AiOutlineEdit } from "react-icons/ai";
-import { NOTE_COLORS } from "../utils/constants";
+import { NOTE_COLORS, TAGS } from "../utils/constants";
 import { Label } from "./Label";
 import {
   addNote,
@@ -23,6 +23,7 @@ import {
 import { useArchives, useAuth, useNotes, useTrash } from "../contexts";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
+import { Dropdown } from "./Dropdown";
 
 export const NoteCard = ({
   note,
@@ -46,6 +47,7 @@ export const NoteCard = ({
   const noteBodyRef = useRef(null);
 
   const [editNote, setEditNote] = useState(newNote);
+  const [showTagsDropdown, setShowTagsDropdown] = useState(false);
   const [noteData, setNoteData] = useState(() =>
     note
       ? {
@@ -200,6 +202,19 @@ export const NoteCard = ({
     }));
   };
 
+  const addLabel = (options) =>
+    setNoteData((noteData) => ({
+      ...noteData,
+      tags: options,
+    }));
+
+  const removeLabel = (label) =>
+    editNote &&
+    setNoteData((noteData) => ({
+      ...noteData,
+      tags: noteData.tags.filter((tag) => tag !== label),
+    }));
+
   const handlePriorityChange = () =>
     !archivedNote &&
     !deletedNote &&
@@ -299,9 +314,12 @@ export const NoteCard = ({
       </form>
       <div className="fr-fs-ct my-md">
         {noteData.tags.map((label, index) => (
-          <Label key={index} className="mx-sm">
-            {label}
-          </Label>
+          <Label
+            label={label}
+            key={index}
+            className="mx-sm"
+            onRemove={removeLabel}
+          />
         ))}
       </div>
       <div className="fr-sb-ct full-width">
@@ -338,9 +356,25 @@ export const NoteCard = ({
             </button>
           )}
           {!disableLabel && (
-            <button className="mx-xs p-sm br-sm fr-ct-ct hover-light">
+            <button
+              disabled={!editNote}
+              onClick={() => setShowTagsDropdown(!showTagsDropdown)}
+              className={`mx-xs p-sm br-sm fr-ct-ct ${
+                editNote ? "hover-light" : ""
+              }`}
+            >
               <MdLabelOutline className="txt-medium txt-md" />
             </button>
+          )}
+          {showTagsDropdown && (
+            <Dropdown
+              className="bottom-right"
+              options={TAGS}
+              value={noteData.tags}
+              onChange={addLabel}
+              onClose={() => setShowTagsDropdown(false)}
+              name="tags"
+            />
           )}
           {!disableArchive && (
             <button
