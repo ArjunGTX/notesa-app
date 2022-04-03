@@ -42,6 +42,7 @@ export const Dropdown = ({
       </button>
       {options?.map((option, index) => (
         <label
+        key={index}
           className="fr-fs-ct cursor-pointer py-sm px-xl br-sm hover-light txt-xs full-width"
           htmlFor={option}
         >
