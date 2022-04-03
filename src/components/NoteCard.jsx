@@ -9,7 +9,7 @@ import {
   FcMediumPriority,
 } from "react-icons/fc";
 import { AiOutlineEdit } from "react-icons/ai";
-import { NOTE_COLORS, TAGS } from "../utils/constants";
+import { NOTE_COLORS } from "../utils/constants";
 import { Label } from "./Label";
 import {
   addNote,
@@ -20,7 +20,7 @@ import {
   updateNote,
   validateNote,
 } from "../utils/api";
-import { useArchives, useAuth, useNotes, useTrash } from "../contexts";
+import { useArchives, useAuth, useLabels, useNotes, useTrash } from "../contexts";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { Dropdown } from "./Dropdown";
@@ -42,6 +42,7 @@ export const NoteCard = ({
   const { setNotes } = useNotes();
   const { setArchives } = useArchives();
   const { setTrash } = useTrash();
+  const {labels} = useLabels();
 
   const colorCountRef = useRef(0);
   const noteBodyRef = useRef(null);
@@ -369,7 +370,7 @@ export const NoteCard = ({
           {showTagsDropdown && (
             <Dropdown
               className="bottom-right"
-              options={TAGS}
+              options={labels}
               value={noteData.tags}
               onChange={addLabel}
               onClose={() => setShowTagsDropdown(false)}
