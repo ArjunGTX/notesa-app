@@ -3,6 +3,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button, Input, InputAlert } from "../components";
 import { useAuth } from "../contexts";
 import { login, validateLoginInputs } from "../utils/api";
+import { toast } from "react-toastify";
+import { TOAST_ERRORS, TOAST_SUCCESS } from "../utils/constants";
+import { Loader } from "../components/Loader";
 
 export const Login = () => {
   const navigate = useNavigate();
@@ -18,20 +21,21 @@ export const Login = () => {
   });
 
   const loginRequest = async (email, password) => {
+    setLoading(true);
     try {
-      setLoading(true);
       const { status, data } = await login(email, password);
-      setLoading(false);
       if (!status === 200) return;
       setAuth({
         userId: data.foundUser._id,
         isLoggedIn: true,
         encodedToken: data.encodedToken,
       });
+      toast.success(TOAST_SUCCESS.LOGIN);
       navigate("/");
     } catch (error) {
-      setLoading(false);
-      console.log(error);
+      toast.error(TOAST_ERRORS.LOGIN);
+    } finally {
+      setTimeout(() => setLoading(false), 800);
     }
   };
 
@@ -119,6 +123,7 @@ export const Login = () => {
           </Link>
         </div>
       </form>
+      {loading && <Loader />}
     </div>
   );
 };

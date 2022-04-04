@@ -1,6 +1,8 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import "./styles/index.scss";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import App from "./App";
 import { makeServer } from "./server";
 import { BrowserRouter } from "react-router-dom";
@@ -27,6 +29,11 @@ ReactDOM.render(
                 <TrashProvider>
                   <LabelsProvider>
                     <App />
+                    <ToastContainer
+                      position="bottom-left"
+                      autoClose={2000}
+                      limit={3}
+                    />
                   </LabelsProvider>
                 </TrashProvider>
               </ArchivesProvider>
