@@ -55,10 +55,10 @@ export const SignUp = () => {
         isLoggedIn: true,
         encodedToken: data.encodedToken,
       });
-      setTimeout(() => toast.success(TOAST_SUCCESS.SIGNUP), 800);
+      toast.success(TOAST_SUCCESS.SIGNUP);
       navigate("/");
     } catch (error) {
-      setTimeout(() => toast.success(TOAST_ERRORS.SIGNUP), 800);
+      toast.error(TOAST_ERRORS.SIGNUP);
     } finally {
       setTimeout(() => setLoading(false), 800);
     }

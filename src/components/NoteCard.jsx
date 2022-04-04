@@ -90,7 +90,6 @@ export const NoteCard = ({
     newNote || updateNoteRequest();
   }, [noteData.isPinned, noteData.color, noteData.priority]);
 
-  //Intentionally added timer of 800ms on all request to display the loading image for more duration
   const createNoteRequest = async (fromTrash) => {
     !fromTrash && setLoading(true);
     try {
@@ -104,7 +103,7 @@ export const NoteCard = ({
           : setTimeout(() => toast.success(TOAST_SUCCESS.CREATE_NOTE), 800);
       }
     } catch (error) {
-      setTimeout(() => toast.error(TOAST_ERRORS.CREATE_NOTE), 800);
+      toast.error(TOAST_ERRORS.CREATE_NOTE);
     } finally {
       !fromTrash && setTimeout(() => setLoading(false), 800);
     }
@@ -122,10 +121,10 @@ export const NoteCard = ({
       if (status === 201) {
         setNotes(data.notes);
         setEditNote(false);
-        setTimeout(() => toast.success(TOAST_SUCCESS.UPDATE_NOTE), 800);
+        toast.success(TOAST_SUCCESS.UPDATE_NOTE);
       }
     } catch (error) {
-      setTimeout(() => toast.error(TOAST_ERRORS.UPDATE_NOTE), 800);
+      toast.error(TOAST_ERRORS.UPDATE_NOTE);
     } finally {
       setTimeout(() => setLoading(false), 800);
     }
@@ -139,10 +138,10 @@ export const NoteCard = ({
       if (status === 200) {
         setNotes(data.notes);
         setTrash((trash) => [...trash, note]);
-        setTimeout(() => toast.success(TOAST_SUCCESS.DELETE_NOTE), 800);
+        toast.success(TOAST_SUCCESS.DELETE_NOTE);
       }
     } catch (error) {
-      setTimeout(() => toast.error(TOAST_ERRORS.DELETE_NOTE), 800);
+      toast.error(TOAST_ERRORS.DELETE_NOTE);
     } finally {
       setTimeout(() => setLoading(false), 800);
     }
@@ -160,10 +159,10 @@ export const NoteCard = ({
       if (status === 201) {
         setArchives(data.archives);
         setNotes(data.notes);
-        setTimeout(() => toast.success(TOAST_SUCCESS.ARCHIVE_NOTE), 800);
+        toast.success(TOAST_SUCCESS.ARCHIVE_NOTE);
       }
     } catch (error) {
-      setTimeout(() => toast.error(TOAST_ERRORS.ARCHIVE_NOTE), 800);
+      toast.error(TOAST_ERRORS.ARCHIVE_NOTE);
     } finally {
       setTimeout(() => setLoading(false), 800);
     }
@@ -180,10 +179,10 @@ export const NoteCard = ({
       if (status === 200) {
         setArchives(data.archives);
         setNotes(data.notes);
-        setTimeout(() => toast.success(TOAST_SUCCESS.UNARCHIVE_NOTE), 800);
+        toast.success(TOAST_SUCCESS.UNARCHIVE_NOTE);
       }
     } catch (error) {
-      setTimeout(() => toast.error(TOAST_ERRORS.UNARCHIVE_NOTE), 800);
+      toast.error(TOAST_ERRORS.UNARCHIVE_NOTE);
     } finally {
       setTimeout(() => setLoading(false), 800);
     }
@@ -200,10 +199,10 @@ export const NoteCard = ({
       if (status === 200) {
         setArchives(data.archives);
         setTrash((trash) => [...trash, note]);
-        setTimeout(() => toast.success(TOAST_SUCCESS.DELETE_NOTE), 800);
+        toast.success(TOAST_SUCCESS.DELETE_NOTE);
       }
     } catch (error) {
-      setTimeout(() => toast.error(TOAST_ERRORS.DELETE_NOTE), 800);
+      toast.error(TOAST_ERRORS.DELETE_NOTE);
     } finally {
       setTimeout(() => setLoading(false), 800);
     }
@@ -213,7 +212,7 @@ export const NoteCard = ({
     setTrash((trash) => trash.filter((item) => item._id !== note._id));
     if (!isRestore) {
       setLoading(true);
-      setTimeout(() => toast.success(TOAST_SUCCESS.PERMANENT_DELETE_NOTE), 800);
+      toast.success(TOAST_SUCCESS.PERMANENT_DELETE_NOTE);
       setTimeout(() => setLoading(false), 800);
     }
   };

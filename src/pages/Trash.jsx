@@ -13,7 +13,7 @@ export const Trash = () => {
     setLoading(true);
     setTrash([]);
     setTimeout(() => setLoading(false), 800);
-    setTimeout(() => toast.success(TOAST_SUCCESS.CLEAR_TRASH), 800)
+    toast.success(TOAST_SUCCESS.CLEAR_TRASH);
   };
 
   return (

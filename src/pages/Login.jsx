@@ -30,10 +30,10 @@ export const Login = () => {
         isLoggedIn: true,
         encodedToken: data.encodedToken,
       });
-      setTimeout(() => toast.success(TOAST_SUCCESS.LOGIN), 800)
+      toast.success(TOAST_SUCCESS.LOGIN);
       navigate("/");
     } catch (error) {
-      setTimeout(() => toast.error(TOAST_ERRORS.LOGIN), 800)
+      toast.error(TOAST_ERRORS.LOGIN);
     } finally {
       setTimeout(() => setLoading(false), 800);
     }
