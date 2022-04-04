@@ -32,6 +32,7 @@ import "react-quill/dist/quill.snow.css";
 import { Dropdown } from "./Dropdown";
 import { toast } from "react-toastify";
 import { useDidUpdateEffect } from "../utils/hooks";
+import { Loader } from "./Loader";
 
 export const NoteCard = ({
   note,
@@ -55,6 +56,7 @@ export const NoteCard = ({
   const colorCountRef = useRef(0);
   const noteBodyRef = useRef(null);
 
+  const [loading, setLoading] = useState(false);
   const [editNote, setEditNote] = useState(newNote);
   const [showTagsDropdown, setShowTagsDropdown] = useState(false);
   const [noteData, setNoteData] = useState(() =>
@@ -88,7 +90,9 @@ export const NoteCard = ({
     newNote || updateNoteRequest();
   }, [noteData.isPinned, noteData.color, noteData.priority]);
 
+  //Intentionally added timer of 800ms on all request to display the loading image for more duration
   const createNoteRequest = async (fromTrash) => {
+    !fromTrash && setLoading(true);
     try {
       if (!auth.isLoggedIn) return;
       const { status, data } = await addNote(auth.encodedToken, noteData);
@@ -96,15 +100,18 @@ export const NoteCard = ({
         setNotes(data.notes);
         clearInputs();
         fromTrash
-          ? toast.success(TOAST_SUCCESS.RESTORE_NOTE)
-          : toast.success(TOAST_SUCCESS.CREATE_NOTE);
+          ? setTimeout(() => toast.success(TOAST_SUCCESS.RESTORE_NOTE), 800)
+          : setTimeout(() => toast.success(TOAST_SUCCESS.CREATE_NOTE), 800);
       }
     } catch (error) {
-      toast.error(TOAST_ERRORS.CREATE_NOTE);
+      setTimeout(() => toast.error(TOAST_ERRORS.CREATE_NOTE), 800);
+    } finally {
+      !fromTrash && setTimeout(() => setLoading(false), 800);
     }
   };
 
   const updateNoteRequest = async () => {
+    setLoading(true);
     try {
       if (!auth.isLoggedIn) return;
       const { status, data } = await updateNote(
@@ -115,28 +122,34 @@ export const NoteCard = ({
       if (status === 201) {
         setNotes(data.notes);
         setEditNote(false);
-        toast.success(TOAST_SUCCESS.UPDATE_NOTE);
+        setTimeout(() => toast.success(TOAST_SUCCESS.UPDATE_NOTE), 800);
       }
     } catch (error) {
-      toast.error(TOAST_ERRORS.UPDATE_NOTE);
+      setTimeout(() => toast.error(TOAST_ERRORS.UPDATE_NOTE), 800);
+    } finally {
+      setTimeout(() => setLoading(false), 800);
     }
   };
 
   const deleteNoteRequest = async () => {
+    setLoading(true);
     try {
       if (!auth.isLoggedIn) return;
       const { status, data } = await deleteNote(auth.encodedToken, note._id);
       if (status === 200) {
         setNotes(data.notes);
         setTrash((trash) => [...trash, note]);
-        toast.success(TOAST_SUCCESS.DELETE_NOTE);
+        setTimeout(() => toast.success(TOAST_SUCCESS.DELETE_NOTE), 800);
       }
     } catch (error) {
-      toast.error(TOAST_ERRORS.DELETE_NOTE);
+      setTimeout(() => toast.error(TOAST_ERRORS.DELETE_NOTE), 800);
+    } finally {
+      setTimeout(() => setLoading(false), 800);
     }
   };
 
   const archiveNoteRequest = async () => {
+    setLoading(true);
     try {
       if (!auth.isLoggedIn) return;
       const { status, data } = await addToArchives(
@@ -147,14 +160,17 @@ export const NoteCard = ({
       if (status === 201) {
         setArchives(data.archives);
         setNotes(data.notes);
-        toast.success(TOAST_SUCCESS.ARCHIVE_NOTE);
+        setTimeout(() => toast.success(TOAST_SUCCESS.ARCHIVE_NOTE), 800);
       }
     } catch (error) {
-      toast.error(TOAST_ERRORS.ARCHIVE_NOTE);
+      setTimeout(() => toast.error(TOAST_ERRORS.ARCHIVE_NOTE), 800);
+    } finally {
+      setTimeout(() => setLoading(false), 800);
     }
   };
 
   const restoreNoteRequest = async () => {
+    setLoading(true);
     try {
       if (!auth.isLoggedIn) return;
       const { status, data } = await restoreFromArchives(
@@ -164,14 +180,17 @@ export const NoteCard = ({
       if (status === 200) {
         setArchives(data.archives);
         setNotes(data.notes);
-        toast.success(TOAST_SUCCESS.UNARCHIVE_NOTE);
+        setTimeout(() => toast.success(TOAST_SUCCESS.UNARCHIVE_NOTE), 800);
       }
     } catch (error) {
-      toast.error(TOAST_ERRORS.UNARCHIVE_NOTE);
+      setTimeout(() => toast.error(TOAST_ERRORS.UNARCHIVE_NOTE), 800);
+    } finally {
+      setTimeout(() => setLoading(false), 800);
     }
   };
 
   const deleteNoteFromArchivesRequest = async () => {
+    setLoading(true);
     try {
       if (!auth.isLoggedIn) return;
       const { status, data } = await deleteFromArchives(
@@ -181,16 +200,22 @@ export const NoteCard = ({
       if (status === 200) {
         setArchives(data.archives);
         setTrash((trash) => [...trash, note]);
-        toast.success(TOAST_SUCCESS.DELETE_NOTE);
+        setTimeout(() => toast.success(TOAST_SUCCESS.DELETE_NOTE), 800);
       }
     } catch (error) {
-      toast.error(TOAST_ERRORS.DELETE_NOTE);
+      setTimeout(() => toast.error(TOAST_ERRORS.DELETE_NOTE), 800);
+    } finally {
+      setTimeout(() => setLoading(false), 800);
     }
   };
 
   const deleteFromTrash = (isRestore) => {
     setTrash((trash) => trash.filter((item) => item._id !== note._id));
-    !isRestore && toast.success(TOAST_SUCCESS.PERMANENT_DELETE_NOTE);
+    if (!isRestore) {
+      setLoading(true);
+      setTimeout(() => toast.success(TOAST_SUCCESS.PERMANENT_DELETE_NOTE), 800);
+      setTimeout(() => setLoading(false), 800);
+    }
   };
 
   const restoreFromTrash = () => {
@@ -425,6 +450,7 @@ export const NoteCard = ({
           )}
         </div>
       </div>
+      {loading && <Loader />}
     </div>
   );
 };

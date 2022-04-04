@@ -1,15 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
 import { NoteCard } from "../components";
 import { useTrash } from "../contexts";
 import { toast } from "react-toastify";
 import { TOAST_SUCCESS } from "../utils/constants";
+import { Loader } from "../components/Loader";
 
 export const Trash = () => {
   const { trash, setTrash } = useTrash();
+  const [loading, setLoading] = useState(false);
 
   const handleEmptyTrash = () => {
+    setLoading(true);
     setTrash([]);
-    toast.success(TOAST_SUCCESS.CLEAR_TRASH);
+    setTimeout(() => setLoading(false), 800);
+    setTimeout(() => toast.success(TOAST_SUCCESS.CLEAR_TRASH), 800)
   };
 
   return (
@@ -41,6 +45,7 @@ export const Trash = () => {
         ) : (
           <p className="txt-sm font-medium my-xl py-xl">Nothing here...</p>
         )}
+        {loading && <Loader />}
       </div>
     </>
   );

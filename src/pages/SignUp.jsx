@@ -5,6 +5,7 @@ import { useAuth } from "../contexts";
 import { signUp, validateSignUpInputs } from "../utils/api";
 import { toast } from "react-toastify";
 import { TOAST_ERRORS, TOAST_SUCCESS } from "../utils/constants";
+import { Loader } from "../components/Loader";
 
 export const SignUp = () => {
   const navigate = useNavigate();
@@ -27,35 +28,39 @@ export const SignUp = () => {
   });
 
   const handleSubmit = async (e) => {
+    e.preventDefault();
+    const { isValid, errors } = validateSignUpInputs(
+      signUpInputs,
+      signUpErrors
+    );
+    if (!isValid) {
+      setSignUpErrors(errors);
+      return;
+    }
+    signUpRequest();
+  };
+
+  const signUpRequest = async () => {
+    setLoading(true);
     try {
-      e.preventDefault();
-      const { isValid, errors } = validateSignUpInputs(
-        signUpInputs,
-        signUpErrors
-      );
-      if (!isValid) {
-        setSignUpErrors(errors);
-        return;
-      }
-      setLoading(true);
       const { status, data } = await signUp(
         signUpInputs.firstName,
         signUpInputs.lastName,
         signUpInputs.email,
         signUpInputs.password
       );
-      setLoading(false);
       if (status !== 201) return;
       setAuth({
         userId: data.createdUser._id,
         isLoggedIn: true,
         encodedToken: data.encodedToken,
       });
-      toast.success(TOAST_SUCCESS.SIGNUP)
+      setTimeout(() => toast.success(TOAST_SUCCESS.SIGNUP), 800);
       navigate("/");
     } catch (error) {
-      setLoading(false);
-      toast.error(TOAST_ERRORS.SIGNUP)
+      setTimeout(() => toast.success(TOAST_ERRORS.SIGNUP), 800);
+    } finally {
+      setTimeout(() => setLoading(false), 800);
     }
   };
 
@@ -158,6 +163,7 @@ export const SignUp = () => {
           </Link>
         </div>
       </form>
+      {loading && <Loader />}
     </div>
   );
 };

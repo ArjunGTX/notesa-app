@@ -5,6 +5,7 @@ import { useAuth } from "../contexts";
 import { login, validateLoginInputs } from "../utils/api";
 import { toast } from "react-toastify";
 import { TOAST_ERRORS, TOAST_SUCCESS } from "../utils/constants";
+import { Loader } from "../components/Loader";
 
 export const Login = () => {
   const navigate = useNavigate();
@@ -20,21 +21,21 @@ export const Login = () => {
   });
 
   const loginRequest = async (email, password) => {
+    setLoading(true);
     try {
-      setLoading(true);
       const { status, data } = await login(email, password);
-      setLoading(false);
       if (!status === 200) return;
       setAuth({
         userId: data.foundUser._id,
         isLoggedIn: true,
         encodedToken: data.encodedToken,
       });
-      toast.success(TOAST_SUCCESS.LOGIN)
+      setTimeout(() => toast.success(TOAST_SUCCESS.LOGIN), 800)
       navigate("/");
     } catch (error) {
-      setLoading(false);
-      toast.error(TOAST_ERRORS.LOGIN)
+      setTimeout(() => toast.error(TOAST_ERRORS.LOGIN), 800)
+    } finally {
+      setTimeout(() => setLoading(false), 800);
     }
   };
 
@@ -122,6 +123,7 @@ export const Login = () => {
           </Link>
         </div>
       </form>
+      {loading && <Loader />}
     </div>
   );
 };
