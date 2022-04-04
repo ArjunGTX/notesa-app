@@ -9,7 +9,7 @@ import {
   FcMediumPriority,
 } from "react-icons/fc";
 import { AiOutlineEdit } from "react-icons/ai";
-import { NOTE_COLORS } from "../utils/constants";
+import { NOTE_COLORS, TOAST_ERRORS, TOAST_SUCCESS } from "../utils/constants";
 import { Label } from "./Label";
 import {
   addNote,
@@ -30,6 +30,8 @@ import {
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { Dropdown } from "./Dropdown";
+import { toast } from "react-toastify";
+import { useDidUpdateEffect } from "../utils/hooks";
 
 export const NoteCard = ({
   note,
@@ -82,20 +84,23 @@ export const NoteCard = ({
     noteBodyRef.current.innerHTML = noteData.body;
   }, [editNote, noteBodyRef.current]);
 
-  useEffect(() => {
+  useDidUpdateEffect(() => {
     newNote || updateNoteRequest();
   }, [noteData.isPinned, noteData.color, noteData.priority]);
 
-  const createNoteRequest = async () => {
+  const createNoteRequest = async (fromTrash) => {
     try {
       if (!auth.isLoggedIn) return;
       const { status, data } = await addNote(auth.encodedToken, noteData);
       if (status === 201) {
         setNotes(data.notes);
         clearInputs();
+        fromTrash
+          ? toast.success(TOAST_SUCCESS.RESTORE_NOTE)
+          : toast.success(TOAST_SUCCESS.CREATE_NOTE);
       }
     } catch (error) {
-      console.log(error);
+      toast.error(TOAST_ERRORS.CREATE_NOTE);
     }
   };
 
@@ -110,9 +115,10 @@ export const NoteCard = ({
       if (status === 201) {
         setNotes(data.notes);
         setEditNote(false);
+        toast.success(TOAST_SUCCESS.UPDATE_NOTE);
       }
     } catch (error) {
-      console.log(error);
+      toast.error(TOAST_ERRORS.UPDATE_NOTE);
     }
   };
 
@@ -123,9 +129,10 @@ export const NoteCard = ({
       if (status === 200) {
         setNotes(data.notes);
         setTrash((trash) => [...trash, note]);
+        toast.success(TOAST_SUCCESS.DELETE_NOTE);
       }
     } catch (error) {
-      console.log(error);
+      toast.error(TOAST_ERRORS.DELETE_NOTE);
     }
   };
 
@@ -140,9 +147,10 @@ export const NoteCard = ({
       if (status === 201) {
         setArchives(data.archives);
         setNotes(data.notes);
+        toast.success(TOAST_SUCCESS.ARCHIVE_NOTE);
       }
     } catch (error) {
-      console.log(error);
+      toast.error(TOAST_ERRORS.ARCHIVE_NOTE);
     }
   };
 
@@ -156,9 +164,10 @@ export const NoteCard = ({
       if (status === 200) {
         setArchives(data.archives);
         setNotes(data.notes);
+        toast.success(TOAST_SUCCESS.UNARCHIVE_NOTE);
       }
     } catch (error) {
-      console.log(error);
+      toast.error(TOAST_ERRORS.UNARCHIVE_NOTE);
     }
   };
 
@@ -172,18 +181,21 @@ export const NoteCard = ({
       if (status === 200) {
         setArchives(data.archives);
         setTrash((trash) => [...trash, note]);
+        toast.success(TOAST_SUCCESS.DELETE_NOTE);
       }
     } catch (error) {
-      console.log(error);
+      toast.error(TOAST_ERRORS.DELETE_NOTE);
     }
   };
 
-  const deleteFromTrash = () =>
+  const deleteFromTrash = (isRestore) => {
     setTrash((trash) => trash.filter((item) => item._id !== note._id));
+    !isRestore && toast.success(TOAST_SUCCESS.PERMANENT_DELETE_NOTE);
+  };
 
   const restoreFromTrash = () => {
-    createNoteRequest();
-    deleteFromTrash();
+    createNoteRequest(true);
+    deleteFromTrash(true);
   };
 
   const handleNoteChange = (e) =>

@@ -1,11 +1,16 @@
 import React from "react";
 import { NoteCard } from "../components";
 import { useTrash } from "../contexts";
+import { toast } from "react-toastify";
+import { TOAST_SUCCESS } from "../utils/constants";
 
 export const Trash = () => {
   const { trash, setTrash } = useTrash();
 
-  const handleEmptyTrash = () => setTrash([]);
+  const handleEmptyTrash = () => {
+    setTrash([]);
+    toast.success(TOAST_SUCCESS.CLEAR_TRASH);
+  };
 
   return (
     <>

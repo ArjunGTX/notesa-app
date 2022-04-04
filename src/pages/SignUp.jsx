@@ -3,6 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button, Input, InputAlert } from "../components";
 import { useAuth } from "../contexts";
 import { signUp, validateSignUpInputs } from "../utils/api";
+import { toast } from "react-toastify";
+import { TOAST_ERRORS, TOAST_SUCCESS } from "../utils/constants";
 
 export const SignUp = () => {
   const navigate = useNavigate();
@@ -49,10 +51,11 @@ export const SignUp = () => {
         isLoggedIn: true,
         encodedToken: data.encodedToken,
       });
+      toast.success(TOAST_SUCCESS.SIGNUP)
       navigate("/");
     } catch (error) {
       setLoading(false);
-      console.log(error);
+      toast.error(TOAST_ERRORS.SIGNUP)
     }
   };
 
