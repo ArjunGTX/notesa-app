@@ -11,15 +11,12 @@ export const filterReducer = (filters, action) => {
       return {
         ...filters,
         filterBy: action.payload,
-        filterLabels: [],
-        filterPriority:[]
       };
     case "ADD_LABEL":
       return {
         ...filters,
         filterLabels: [...filters.filterLabels, action.payload],
       };
-
     case "REMOVE_LABEL":
       return {
         ...filters,
@@ -27,13 +24,11 @@ export const filterReducer = (filters, action) => {
           (item) => item !== action.payload
         ),
       };
-
     case "ADD_PRIORITY":
       return {
         ...filters,
         filterPriority: [...filters.filterPriority, action.payload],
       };
-
     case "REMOVE_PRIORITY":
       return {
         ...filters,
@@ -41,7 +36,6 @@ export const filterReducer = (filters, action) => {
           (item) => item !== action.payload
         ),
       };
-
     case "CLEAR_FILTERS":
     default:
       return initialFilters;

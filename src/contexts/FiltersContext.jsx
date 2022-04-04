@@ -7,7 +7,7 @@ export const initialFilters = {
   sortBy: "",
   filterBy: "",
   filterLabels: [],
-  filterPriority: [],
+  filterPriority: ["Medium"],
 };
 
 export const useFilters = () => useContext(FiltersContext);

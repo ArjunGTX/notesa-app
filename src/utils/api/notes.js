@@ -45,3 +45,32 @@ export const validateNote = ({ title, body }) => {
   if (!body) return false;
   return true;
 };
+
+export const getSortedNotes = (sort, notes) => {
+  switch (sort) {
+    case "oldest":
+      return [...notes].sort(
+        (noteOne, noteTwo) => noteOne.createdAt - noteTwo.createdAt
+      );
+    case "newest":
+      return [...notes].sort(
+        (noteOne, noteTwo) => noteTwo.createdAt - noteOne.createdAt
+      );
+    default:
+      return notes;
+  }
+};
+
+export const getFilteredNotes = (notes, filters) => {
+  if (!notes) return;
+  const sortedNotes = getSortedNotes(filters.sortBy, notes);
+  if (filters.filterBy === "priority")
+    return sortedNotes.filter((note) =>
+      filters.filterPriority.includes(note.priority)
+    );
+  if (filters.filterBy === "label")
+    return sortedNotes.filter((note) =>
+      note.tags.some((tag) => filters.filterLabels.includes(tag))
+    );
+  return sortedNotes;
+};
