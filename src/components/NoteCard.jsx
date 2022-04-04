@@ -20,7 +20,13 @@ import {
   updateNote,
   validateNote,
 } from "../utils/api";
-import { useArchives, useAuth, useLabels, useNotes, useTrash } from "../contexts";
+import {
+  useArchives,
+  useAuth,
+  useLabels,
+  useNotes,
+  useTrash,
+} from "../contexts";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { Dropdown } from "./Dropdown";
@@ -42,7 +48,7 @@ export const NoteCard = ({
   const { setNotes } = useNotes();
   const { setArchives } = useArchives();
   const { setTrash } = useTrash();
-  const {labels} = useLabels();
+  const { labels } = useLabels();
 
   const colorCountRef = useRef(0);
   const noteBodyRef = useRef(null);
@@ -67,7 +73,7 @@ export const NoteCard = ({
           isPinned: false,
           tags: [],
           createdAt: Date.now(),
-          priority: "medium",
+          priority: "Medium",
         }
   );
 
@@ -222,11 +228,11 @@ export const NoteCard = ({
     setNoteData((noteData) => ({
       ...noteData,
       priority:
-        noteData.priority === "low"
-          ? "medium"
-          : noteData.priority === "medium"
-          ? "high"
-          : "low",
+        noteData.priority === "Low"
+          ? "Medium"
+          : noteData.priority === "Medium"
+          ? "High"
+          : "Low",
     }));
 
   const handleSave = () => {
@@ -251,7 +257,7 @@ export const NoteCard = ({
       isPinned: false,
       tags: [],
       createdAt: Date.now(),
-      priority: "medium",
+      priority: "Medium",
     });
 
   return (
@@ -276,9 +282,9 @@ export const NoteCard = ({
         onClick={handlePriorityChange}
         className="pos-abs top-left mt-xs ml-xs"
       >
-        {noteData.priority === "low" ? (
+        {noteData.priority === "Low" ? (
           <FcLowPriority className="txt-lg" />
-        ) : noteData.priority === "medium" ? (
+        ) : noteData.priority === "Medium" ? (
           <FcMediumPriority className="txt-lg" />
         ) : (
           <FcHighPriority className="txt-lg" />

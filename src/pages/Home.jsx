@@ -1,9 +1,5 @@
 import React, { useState } from "react";
-import {
-  Button,
-  NoteCard,
-  SearchBar,
-} from "../components";
+import { Button, NoteCard, SearchBar } from "../components";
 import { useNotes } from "../contexts";
 
 export const Home = () => {
@@ -38,12 +34,7 @@ export const Home = () => {
       )}
       <div className="note-container full-height ofy-auto fc-fs-ct p-xl mt-xl">
         {showCreateNote && (
-          <NoteCard
-            newNote
-            disableArchive
-            disableDelete
-            className="mb-xl"
-          />
+          <NoteCard newNote disableArchive disableDelete className="mb-xl" />
         )}
         {notes.length !== 0 && (
           <>

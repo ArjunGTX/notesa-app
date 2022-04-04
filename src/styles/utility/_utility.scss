@@ -158,7 +158,7 @@
   right: auto;
 }
 .bottom-right {
-  bottom: 1rem;
+  top: 100%;
   right: 1rem;
   left: auto;
 }
@@ -196,4 +196,14 @@
 }
 .ul-none {
   border-bottom: 2px solid transparent !important;
+}
+
+.z-100 {
+  z-index: 100;
+}
+.z-200 {
+  z-index: 200;
+}
+.z-300 {
+  z-index: 300;
 }
