@@ -5,6 +5,7 @@ import { useAuth } from "./contexts";
 import {
   Archive,
   Home,
+  Label,
   LandingPage,
   Login,
   PageNotFound,
@@ -56,6 +57,16 @@ function App() {
           <ProtectedRoute>
             <PageContainer>
               <Trash />
+            </PageContainer>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/label"
+        element={
+          <ProtectedRoute>
+            <PageContainer>
+              <Label />
             </PageContainer>
           </ProtectedRoute>
         }

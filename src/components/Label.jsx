@@ -1,14 +1,15 @@
 import React from "react";
 import { GrFormClose } from "react-icons/gr";
 
-export const Label = ({ className, children }) => {
+export const Label = ({ className, label, onRemove }) => {
   return (
     <div
-      className={`br-sm px-sm bg-light fr-fs-ct txt-xs ${
+      onClick={() => onRemove(label)}
+      className={`br-sm px-sm bg-light fr-fs-ct txt-xs cursor-pointer ${
         className ? className : ""
       }`}
     >
-      {children}
+      {label}
       <button className="ml-xs">
         <GrFormClose className="txt-xs" />
       </button>

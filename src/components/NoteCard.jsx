@@ -3,6 +3,11 @@ import { BsPinAngle, BsPinAngleFill, BsPalette } from "react-icons/bs";
 import { MdLabelOutline, MdOutlineUnarchive } from "react-icons/md";
 import { FaRegTrashAlt, FaTrashRestore } from "react-icons/fa";
 import { FiArchive } from "react-icons/fi";
+import {
+  FcHighPriority,
+  FcLowPriority,
+  FcMediumPriority,
+} from "react-icons/fc";
 import { AiOutlineEdit } from "react-icons/ai";
 import { NOTE_COLORS } from "../utils/constants";
 import { Label } from "./Label";
@@ -15,9 +20,10 @@ import {
   updateNote,
   validateNote,
 } from "../utils/api";
-import { useArchives, useAuth, useNotes, useTrash } from "../contexts";
+import { useArchives, useAuth, useLabels, useNotes, useTrash } from "../contexts";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
+import { Dropdown } from "./Dropdown";
 
 export const NoteCard = ({
   note,
@@ -36,11 +42,13 @@ export const NoteCard = ({
   const { setNotes } = useNotes();
   const { setArchives } = useArchives();
   const { setTrash } = useTrash();
+  const {labels} = useLabels();
 
   const colorCountRef = useRef(0);
   const noteBodyRef = useRef(null);
 
   const [editNote, setEditNote] = useState(newNote);
+  const [showTagsDropdown, setShowTagsDropdown] = useState(false);
   const [noteData, setNoteData] = useState(() =>
     note
       ? {
@@ -50,6 +58,7 @@ export const NoteCard = ({
           isPinned: note.isPinned,
           tags: note.tags,
           title: note.title,
+          priority: note.priority,
         }
       : {
           title: "",
@@ -58,6 +67,7 @@ export const NoteCard = ({
           isPinned: false,
           tags: [],
           createdAt: Date.now(),
+          priority: "medium",
         }
   );
 
@@ -68,7 +78,7 @@ export const NoteCard = ({
 
   useEffect(() => {
     newNote || updateNoteRequest();
-  }, [noteData.isPinned, noteData.color]);
+  }, [noteData.isPinned, noteData.color, noteData.priority]);
 
   const createNoteRequest = async () => {
     try {
@@ -184,7 +194,7 @@ export const NoteCard = ({
   };
 
   const handleColorChange = () => {
-    colorCountRef.current !== 3
+    colorCountRef.current !== 5
       ? (colorCountRef.current += 1)
       : (colorCountRef.current = 0);
     setNoteData((noteData) => ({
@@ -192,6 +202,32 @@ export const NoteCard = ({
       color: NOTE_COLORS[colorCountRef.current],
     }));
   };
+
+  const addLabel = (options) =>
+    setNoteData((noteData) => ({
+      ...noteData,
+      tags: options,
+    }));
+
+  const removeLabel = (label) =>
+    editNote &&
+    setNoteData((noteData) => ({
+      ...noteData,
+      tags: noteData.tags.filter((tag) => tag !== label),
+    }));
+
+  const handlePriorityChange = () =>
+    !archivedNote &&
+    !deletedNote &&
+    setNoteData((noteData) => ({
+      ...noteData,
+      priority:
+        noteData.priority === "low"
+          ? "medium"
+          : noteData.priority === "medium"
+          ? "high"
+          : "low",
+    }));
 
   const handleSave = () => {
     newNote ? createNoteRequest() : updateNoteRequest();
@@ -215,6 +251,7 @@ export const NoteCard = ({
       isPinned: false,
       tags: [],
       createdAt: Date.now(),
+      priority: "medium",
     });
 
   return (
@@ -235,17 +272,29 @@ export const NoteCard = ({
           )
         ) : null}
       </button>
+      <button
+        onClick={handlePriorityChange}
+        className="pos-abs top-left mt-xs ml-xs"
+      >
+        {noteData.priority === "low" ? (
+          <FcLowPriority className="txt-lg" />
+        ) : noteData.priority === "medium" ? (
+          <FcMediumPriority className="txt-lg" />
+        ) : (
+          <FcHighPriority className="txt-lg" />
+        )}
+      </button>
       <form>
-        <input
+        <textarea
           type="text"
           id="title"
           placeholder="Note Title"
           value={noteData.title}
           disabled={!editNote}
+          rows={1}
           onChange={handleNoteChange}
-          className="txt-md font-medium mr-xl mb-md pr-xl full-width"
+          className="txt-md font-medium mx-lg mb-md px-xl full-width"
         />
-
         {editNote ? (
           <ReactQuill
             value={noteData.body}
@@ -266,9 +315,12 @@ export const NoteCard = ({
       </form>
       <div className="fr-fs-ct my-md">
         {noteData.tags.map((label, index) => (
-          <Label key={index} className="mx-sm">
-            {label}
-          </Label>
+          <Label
+            label={label}
+            key={index}
+            className="mx-sm"
+            onRemove={removeLabel}
+          />
         ))}
       </div>
       <div className="fr-sb-ct full-width">
@@ -305,9 +357,25 @@ export const NoteCard = ({
             </button>
           )}
           {!disableLabel && (
-            <button className="mx-xs p-sm br-sm fr-ct-ct hover-light">
+            <button
+              disabled={!editNote}
+              onClick={() => setShowTagsDropdown(!showTagsDropdown)}
+              className={`mx-xs p-sm br-sm fr-ct-ct ${
+                editNote ? "hover-light" : ""
+              }`}
+            >
               <MdLabelOutline className="txt-medium txt-md" />
             </button>
+          )}
+          {showTagsDropdown && (
+            <Dropdown
+              className="bottom-right"
+              options={labels}
+              value={noteData.tags}
+              onChange={addLabel}
+              onClose={() => setShowTagsDropdown(false)}
+              name="tags"
+            />
           )}
           {!disableArchive && (
             <button
