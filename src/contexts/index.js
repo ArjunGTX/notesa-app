@@ -4,3 +4,4 @@ export * from "./NotesContext";
 export * from "./ArchivesContext";
 export * from "./TrashContext";
 export * from "./LabelsContext";
+export * from "./FiltersContext";

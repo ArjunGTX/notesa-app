@@ -2,9 +2,11 @@ import React, { useState } from "react";
 import { Input } from "./Input";
 import { AiOutlineSearch } from "react-icons/ai";
 import { FiFilter } from "react-icons/fi";
+import { Filter } from "./Filter";
 
 export const SearchBar = ({ className }) => {
   const [search, setSearch] = useState("");
+  const [showFilters, setShowFilters] = useState(false);
 
   const handleSearchChange = (e) => setSearch(e.target.value);
   return (
@@ -24,9 +26,18 @@ export const SearchBar = ({ className }) => {
           onChange={handleSearchChange}
         />
       </form>
-      <button className="pos-abs filter-btn">
+      <button
+        onClick={() => setShowFilters(!showFilters)}
+        className="pos-abs filter-btn"
+      >
         <FiFilter className="txt-md" />
       </button>
+      {showFilters && (
+        <Filter
+          onClose={() => setShowFilters(false)}
+          className="bottom-right"
+        />
+      )}
     </div>
   );
 };

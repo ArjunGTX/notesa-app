@@ -51,7 +51,7 @@ export const Dropdown = ({
   return (
     <div
       ref={dropDownRef}
-      className={`p-md br-sm shadow-medium bg-light fc-fs-fs pos-abs dropdown ${
+      className={`p-md br-sm shadow-medium bg-light fc-fs-fs pos-abs z-200 dropdown ${
         className ? className : ""
       }`}
     >
