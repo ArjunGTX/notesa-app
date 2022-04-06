@@ -5,8 +5,10 @@ import { FiArchive } from "react-icons/fi";
 import { MdLabelOutline } from "react-icons/md";
 import { GrClose } from "react-icons/gr";
 import { ListItem } from "./ListItem";
-import { useSideNav } from "../contexts";
+import { useAuth, useSideNav } from "../contexts";
 import { useClickOutside } from "../utils/hooks";
+import { Button } from "./Button";
+import { useNavigate } from "react-router-dom";
 
 const LINKS = [
   {
@@ -29,14 +31,11 @@ const LINKS = [
     route: "/trash",
     icon: <FaRegTrashAlt />,
   },
-  {
-    item: "Profile",
-    route: "/profile",
-    icon: <FaRegUserCircle />,
-  },
 ];
 
 export const SideNav = ({ className }) => {
+  const navigate = useNavigate();
+  const { setAuth } = useAuth();
   const { isSideNavActive, toggleSideNav } = useSideNav();
 
   const sideNavRef = useRef(null);
@@ -44,6 +43,14 @@ export const SideNav = ({ className }) => {
   const closeSideNav = () => toggleSideNav(false);
 
   useClickOutside(sideNavRef, closeSideNav);
+
+  const handleLogout = () => {
+    setAuth({
+      isLoggedIn: false,
+      encodedToken: "",
+    });
+    navigate("/");
+  };
 
   return (
     <div
@@ -58,6 +65,16 @@ export const SideNav = ({ className }) => {
       {LINKS.map((link) => (
         <ListItem key={link.item} link={link} />
       ))}
+      <div className="mx-xl">
+        <Button
+          onClick={handleLogout}
+          variant="outlined"
+          color="primary"
+          className="ml-xl mt-lg txt-xs"
+        >
+          Logout
+        </Button>
+      </div>
     </div>
   );
 };
