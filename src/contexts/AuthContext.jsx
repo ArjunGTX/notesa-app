@@ -5,17 +5,23 @@ const AuthContext = createContext(null);
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
-
-  const [auth, setAuth] = useState({
-    userId: localStorage.getItem("userId"),
-    isLoggedIn: JSON.parse(localStorage.getItem("isLoggedIn")),
-    encodedToken: localStorage.getItem("encodedToken"),
-  });
+  const [auth, setAuth] = useState(
+    localStorage.getItem("auth")
+      ? JSON.parse(localStorage.getItem("auth"))
+      : {
+          encodedToken: "",
+          isLoggedIn: false,
+        }
+  );
 
   useEffect(() => {
-    localStorage.setItem("userId", auth.userId);
-    localStorage.setItem("isLoggedIn", auth.isLoggedIn);
-    localStorage.setItem("encodedToken", auth.encodedToken);
+    localStorage.setItem(
+      "auth",
+      JSON.stringify({
+        isLoggedIn: auth.isLoggedIn,
+        encodedToken: auth.encodedToken,
+      })
+    );
   }, [auth]);
 
   return (

@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Button, Input, InputAlert } from "../components";
 import { useAuth } from "../contexts";
 import { signUp, validateSignUpInputs } from "../utils/api";
@@ -9,7 +9,11 @@ import { Loader } from "../components/Loader";
 
 export const SignUp = () => {
   const navigate = useNavigate();
-  const { setAuth } = useAuth();
+  const location = useLocation();
+  const {
+    auth: { isLoggedIn },
+    setAuth,
+  } = useAuth();
 
   const [loading, setLoading] = useState(false);
   const [signUpInputs, setSignUpInputs] = useState({
@@ -26,6 +30,10 @@ export const SignUp = () => {
     password: "",
     confirmPassword: "",
   });
+
+  useEffect(() => {
+    isLoggedIn && navigate("/");
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -51,7 +59,6 @@ export const SignUp = () => {
       );
       if (status !== 201) return;
       setAuth({
-        userId: data.createdUser._id,
         isLoggedIn: true,
         encodedToken: data.encodedToken,
       });
@@ -157,6 +164,9 @@ export const SignUp = () => {
           </Button>
           <Link
             to="/login"
+            state={{
+              from: location,
+            }}
             className="txt-underline hover-light py-sm px-lg br-sm"
           >
             Already have an Account

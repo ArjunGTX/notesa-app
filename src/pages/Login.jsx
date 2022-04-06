@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button, Input, InputAlert } from "../components";
 import { useAuth } from "../contexts";
 import { login, validateLoginInputs } from "../utils/api";
@@ -9,7 +9,17 @@ import { Loader } from "../components/Loader";
 
 export const Login = () => {
   const navigate = useNavigate();
-  const { setAuth } = useAuth();
+  const {
+    auth: { isLoggedIn },
+    setAuth,
+  } = useAuth();
+  const location = useLocation();
+  const from = location.state?.from
+    ? location.state.from.pathname === "/sign-up"
+      ? "/"
+      : location.state.from.pathname
+    : -1;
+
   const [loading, setLoading] = useState(false);
   const [loginInputs, setLoginInputs] = useState({
     email: "",
@@ -20,18 +30,23 @@ export const Login = () => {
     password: "",
   });
 
+  useEffect(() => {
+    isLoggedIn && navigate("/");
+  }, []);
+
   const loginRequest = async (email, password) => {
     setLoading(true);
     try {
       const { status, data } = await login(email, password);
       if (!status === 200) return;
       setAuth({
-        userId: data.foundUser._id,
         isLoggedIn: true,
         encodedToken: data.encodedToken,
       });
       toast.success(TOAST_SUCCESS.LOGIN);
-      navigate("/");
+      navigate(from, {
+        replace: true,
+      });
     } catch (error) {
       toast.error(TOAST_ERRORS.LOGIN);
     } finally {

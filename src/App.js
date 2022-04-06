@@ -1,6 +1,5 @@
-import { useEffect } from "react";
-import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
-import { PageContainer, ProtectedRoute } from "./components";
+import { Route, Routes } from "react-router-dom";
+import { PageContainer } from "./components";
 import { useAuth } from "./contexts";
 import {
   Archive,
@@ -14,16 +13,9 @@ import {
 } from "./pages";
 
 function App() {
-  const navigate = useNavigate();
-  const { pathname } = useLocation();
   const {
     auth: { isLoggedIn },
   } = useAuth();
-
-  useEffect(() => {
-    if (!isLoggedIn) return;
-    if (pathname === "/login" || pathname === "/sign-up") navigate("/");
-  }, [pathname, isLoggedIn]);
 
   return (
     <Routes>
@@ -31,9 +23,7 @@ function App() {
         path="/"
         element={
           isLoggedIn ? (
-            <PageContainer>
-              <Home />
-            </PageContainer>
+            <PageContainer page={<Home />} requiresAuth />
           ) : (
             <LandingPage />
           )
@@ -43,33 +33,15 @@ function App() {
       <Route path="/sign-up" element={<SignUp />} />
       <Route
         path="/archive"
-        element={
-          <ProtectedRoute>
-            <PageContainer>
-              <Archive />
-            </PageContainer>
-          </ProtectedRoute>
-        }
+        element={<PageContainer page={<Archive />} requiresAuth />}
       />
       <Route
         path="/trash"
-        element={
-          <ProtectedRoute>
-            <PageContainer>
-              <Trash />
-            </PageContainer>
-          </ProtectedRoute>
-        }
+        element={<PageContainer page={<Trash />} requiresAuth />}
       />
       <Route
         path="/label"
-        element={
-          <ProtectedRoute>
-            <PageContainer>
-              <Label />
-            </PageContainer>
-          </ProtectedRoute>
-        }
+        element={<PageContainer page={<Label />} requiresAuth />}
       />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
