@@ -31,3 +31,8 @@ export const removeFilterPriority = (payload) => ({
 export const clearFilters = () => ({
   type: "CLEAR_FILTERS",
 });
+
+export const searchNote = (query) => ({
+  type: "SEARCH_NOTES",
+  payload: query,
+});

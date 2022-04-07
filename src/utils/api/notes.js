@@ -1,4 +1,5 @@
 import axios from "axios";
+import { compareStrings } from "../helpers";
 
 export const getNotes = async (token) => {
   return await axios.get("/api/notes", {
@@ -64,13 +65,16 @@ export const getSortedNotes = (sort, notes) => {
 export const getFilteredNotes = (notes, filters) => {
   if (!notes) return;
   const sortedNotes = getSortedNotes(filters.sortBy, notes);
+  const searchedNotes = sortedNotes.filter((note) =>
+    compareStrings(note.title, filters.search)
+  );
   if (filters.filterBy === "priority")
-    return sortedNotes.filter((note) =>
+    return searchedNotes.filter((note) =>
       filters.filterPriority.includes(note.priority)
     );
   if (filters.filterBy === "label")
-    return sortedNotes.filter((note) =>
+    return searchedNotes.filter((note) =>
       note.tags.some((tag) => filters.filterLabels.includes(tag))
     );
-  return sortedNotes;
+  return searchedNotes;
 };
