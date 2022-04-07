@@ -2,6 +2,11 @@ import { initialFilters } from "../contexts";
 
 export const filterReducer = (filters, action) => {
   switch (action.type) {
+    case "SEARCH_NOTES":
+      return {
+        ...filters,
+        search: action.payload,
+      };
     case "SORT_BY":
       return {
         ...filters,
@@ -37,6 +42,10 @@ export const filterReducer = (filters, action) => {
         ),
       };
     case "CLEAR_FILTERS":
+      return {
+        ...initialFilters,
+        search: filters.search,
+      };
     default:
       return initialFilters;
   }

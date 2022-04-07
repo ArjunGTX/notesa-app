@@ -5,6 +5,7 @@ const FiltersContext = createContext(null);
 
 export const initialFilters = {
   sortBy: "",
+  search: "",
   filterBy: "",
   filterLabels: [],
   filterPriority: ["Medium"],
